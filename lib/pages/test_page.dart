@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
+class TestPage extends StatelessWidget {
+  const TestPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
         title: Text(title),
       ),
       body: const Center(
-        child: Text('Home Page'),
+        child: Text('Test'),
       ),
     );
   }
