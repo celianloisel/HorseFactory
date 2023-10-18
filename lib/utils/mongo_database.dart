@@ -1,22 +1,17 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:horse_factory/constants/database.dart';
+import 'package:horse_factory/models/party.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class MongoDatabase {
-  static connect() async {
+  static late Db _db;
+
+  Future<void> connect() async {
     try {
-      var db = await Db.create(mongodbUrl);
-      await db.open();
-      inspect(db);
-      var status = await db.serverStatus();
+      _db = await Db.create(mongodbUrl);
+      await _db.open();
       if (kDebugMode) {
-        print(status);
-      }
-      var collection = db.collection(collectionName);
-      if (kDebugMode) {
-        print(await collection.find().toList());
+        print("Connected to MongoDB");
       }
     } catch (e) {
       if (kDebugMode) {

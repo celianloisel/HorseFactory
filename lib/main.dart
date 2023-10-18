@@ -4,9 +4,8 @@ import 'package:horse_factory/utils/mongo_database.dart';
 import 'package:horse_factory/widgets/bottom_navigation_bar_widget.dart';
 
 Future<void> main() async {
+  await MongoDatabase().connect();
   WidgetsFlutterBinding.ensureInitialized();
-  await MongoDatabase.connect();
-
   SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
