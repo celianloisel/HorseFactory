@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/registration_page.dart';
 import 'package:horse_factory/services/authentication_service.dart';
+import 'package:mongo_dart/mongo_dart.dart' show Db, ModifierBuilder, where;
 import 'package:provider/provider.dart';
 
+import '../constants/database.dart';
 import '../models/auth.dart';
 import '../widgets/bottom_navigation_bar_widget.dart';
 
@@ -59,6 +60,80 @@ class _LoginState extends State<LoginPage> {
     );
   }
 
+  void _showPasswordResetDialog() {
+    TextEditingController userNameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController newPasswordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Réinitialisation du mot de passe'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: userNameController,
+                decoration: InputDecoration(labelText: 'Username'),
+              ),
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+              TextFormField(
+                controller: newPasswordController,
+                decoration: InputDecoration(labelText: 'Nouveau Mot de Passe'),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                String userName = userNameController.text;
+                String email = emailController.text;
+                String newPassword = newPasswordController.text;
+
+                var db = await Db.create(MONGODB_URL);
+                await db.open();
+                final usersCollection = db.collection(COLLECTION_NAME);
+
+                final query = where.eq('userName', userName).eq('email', email);
+                final userMap = await usersCollection.findOne(query);
+
+                if (userMap != null) {
+                  // Utilisateur trouvé, mettez à jour le mot de passe avec le nouveau mot de passe saisi
+                  final updateBuilder = ModifierBuilder();
+                  updateBuilder.set('password', newPassword);
+
+                  await usersCollection.update(query, updateBuilder);
+
+                  // Fermez la boîte de dialogue
+                  Navigator.of(context).pop();
+                } else {
+                  showError('Aucun utilisateur trouvé avec cet username et email.');
+                }
+
+                await db.close();
+              },
+              child: Text('Réinitialiser le mot de passe'),
+            ),
+
+            TextButton(
+              onPressed: () {
+                // Fermez la boîte de dialogue
+                Navigator.of(context).pop();
+              },
+              child: Text('Annuler'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,12 +180,19 @@ class _LoginState extends State<LoginPage> {
                           },
                           child: Text('Log In'),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
+                        TextButton(
+                          onPressed: () {
+                            _showPasswordResetDialog();
+                          },
+                          child: Text('Mot de passe oublié ?'),
+                        ),
+                        SizedBox(height: 5),
                         TextButton(
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
                           },
-                          child: Text("Don't have an account? Register here"),
+                          child: Text("Pas encore de compte ?"),
                         ),
                       ],
                     ),
