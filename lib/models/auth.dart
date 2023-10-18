@@ -24,6 +24,7 @@ class AuthModel extends ChangeNotifier {
   }
 
   void logout() {
+    print('Log out du auth');
     if (_user == null) {
       _error = "L'utilisateur est déjà déconnecté.";
       return;

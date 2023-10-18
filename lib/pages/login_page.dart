@@ -5,6 +5,7 @@ import 'package:horse_factory/services/authentication_service.dart';
 import 'package:provider/provider.dart';
 
 import '../models/auth.dart';
+import '../widgets/bottom_navigation_bar_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -24,7 +25,9 @@ class _LoginState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    print('loginnnnnnnnnnnn');
     if (_formKey.currentState!.validate()) {
+      print('Je suis dans if');
       final userName = _userNameController.text;
       final password = _passwordController.text;
 
@@ -33,7 +36,7 @@ class _LoginState extends State<LoginPage> {
 
         if (user != null && user.password == password) {
           Provider.of<AuthModel>(context, listen: false).login(user);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user)));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationBarWidget(user: user)));
         } else {
           if (user == null) {
             showError('Aucun utilisateur trouvé avec ce nom d\'utilisateur.');

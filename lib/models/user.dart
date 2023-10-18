@@ -2,19 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class User with ChangeNotifier {
-  ObjectId? id;
-  String userName;
-  String email;
-  String password;
-  String profilePictureUrl;
+  late ObjectId id;
+  late String userName;
+  late String email;
+  late String password;
+  late String profilePictureUrl;
+
 
   User({
-    this.id,
+    ObjectId? id,
     required this.userName,
     required this.email,
     required this.password,
     required this.profilePictureUrl,
-  }) {
+  }) : id = id ?? ObjectId() {
     if (userName.isEmpty) {
       throw Exception("Le nom d'utilisateur ne peut pas être vide.");
     }
@@ -25,6 +26,7 @@ class User with ChangeNotifier {
       throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
     }
   }
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -62,11 +64,12 @@ class User with ChangeNotifier {
       throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
     }
 
-    this.id = id;
+    this.id = id ?? ObjectId();
     this.userName = userName;
     this.email = email;
     this.password = password;
     this.profilePictureUrl = profilePictureUrl;
     notifyListeners();
   }
+
 }

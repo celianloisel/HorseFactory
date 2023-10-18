@@ -40,7 +40,6 @@ void main() async {
     );
   } catch (error) {
     print("Une erreur s'est produite lors de l'initialisation de l'application : $error");
-    // Vous pouvez afficher un message d'erreur à l'utilisateur ici si nécessaire.
   }
 }
 
@@ -65,7 +64,7 @@ class MyApp extends StatelessWidget {
     final authModel = Provider.of<AuthModel>(context);
 
     return MaterialApp(
-      home: authModel.user != null ? HomePage(user: authModel.user!) : LoginPage(),
+      home: authModel.user != null ? BottomNavigationBarWidget(user: authModel.user!) : LoginPage(),
       // ...
     );
   }

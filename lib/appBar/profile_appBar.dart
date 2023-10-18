@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/auth.dart';
+import '../pages/login_page.dart';
+import '../services/authentication_service.dart';
 
 class ProfileAppBar extends StatelessWidget {
   final User? user;
   final List<OverlayEntry> _overlayEntries;
+  final AuthService _authService;
 
-  const ProfileAppBar({this.user, required List<OverlayEntry> overlayEntries})
-      : _overlayEntries = overlayEntries;
+  const ProfileAppBar({
+    this.user,
+    required List<OverlayEntry> overlayEntries,
+    required AuthService authService,
+  }) : _overlayEntries = overlayEntries, _authService = authService;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +27,17 @@ class ProfileAppBar extends StatelessWidget {
           children: [
             TextSpan(
               text: '${user!.userName}\n',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                color: Colors.white, // Texte en blanc
+                fontSize: 20, // Taille de la police
+                fontWeight: FontWeight.bold, // Gras
               ),
             ),
             TextSpan(
               text: '${user!.email}',
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Colors.black,
+              style: TextStyle(
+                color: Colors.white, // Texte en blanc
+                fontSize: 16, // Taille de la police
               ),
             ),
           ],
@@ -66,30 +74,43 @@ class ProfileAppBar extends StatelessWidget {
         child: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back),
-          tooltip: 'Retour vers la page accueil',
+          tooltip: 'Retour vers la page d\'accueil',
         ),
       ),
       actions: [
         Container(
-          alignment: Alignment.center,
+          width: 50,
+          height: 50,
           margin: EdgeInsets.only(right: 8.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.black,
           ),
-          child: ElevatedButton(
-            onPressed: () {
-              Provider.of<AuthModel>(context, listen: false).logout(); // Déconnexion de l'utilisateur
+          child: InkWell(
+            onTap: () {
+              signOut(context);
             },
-            child: Text('Logout'),
-          )
-
-        ),
+            child: Center(
+              child: Text(
+                'Logout',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
 
-  signOut(BuildContext context) {
-    Navigator.popUntil(context, ModalRoute.withName('/'));
+  Future<void> signOut(BuildContext context) async {
+    print('Log out');
+    Provider.of<AuthModel>(context, listen: false).logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false,
+    );
   }
 }

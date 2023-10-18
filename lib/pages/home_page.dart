@@ -3,7 +3,7 @@ import 'package:horse_factory/appBar/home_appBar.dart';
 import 'package:horse_factory/models/user.dart';
 
 class HomePage extends StatelessWidget {
-  final User? user;
+  late User user;
 
   HomePage({required this.user});
 
@@ -12,11 +12,11 @@ class HomePage extends StatelessWidget {
     String welcomeMessage = 'Bienvenue, Utilisateur ${user?.email}';
 
     if (user?.userName != null && user!.userName.isNotEmpty) {
-      welcomeMessage = 'Bienvenue, ${user?.userName}';
+      welcomeMessage = 'Bienvenue, ${user.userName}';
     }
 
     return Scaffold(
-      appBar: HomeAppBar(user: user), // Utilisez HomeAppBar comme barre d'applications
+      appBar: HomeAppBar(user: user),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverToBoxAdapter(

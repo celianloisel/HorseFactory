@@ -20,7 +20,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => Profile(user: user),
+                    pageBuilder: (_, __, ___) => Profile(user: user!),
                   ),
                 );
               },
@@ -31,10 +31,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child: Hero(
                     tag: user!.profilePictureUrl,
                     child: Container(
-                      width: 40, // Vous pouvez ajuster la taille du cercle en changeant la largeur
-                      height: 40, // et la hauteur ici
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle, // Crée un cercle
+                        shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: NetworkImage(user!.profilePictureUrl),

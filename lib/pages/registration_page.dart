@@ -41,25 +41,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  Future<void> selectProfilePicture() async {
-    var status = await Permission.photos.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('L\'accès à la galerie est requis pour sélectionner une photo de profil.'),
-        ),
-      );
-      return;
-    }
-
-    final imagePicker = ImagePicker();
-    final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        selectedImage = Image.file(File(image.path));
-        profilePictureUrl = image.path;
-      });
-    }
+  void selectProfilePicture() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('Sélectionner une photo depuis la galerie'),
+              onTap: () async {
+                Navigator.pop(context);
+                final imagePicker = ImagePicker();
+                final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
+                if (image != null) {
+                  setState(() {
+                    selectedImage = Image.file(File(image.path));
+                    profilePictureUrl = image.path;
+                  });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> saveUserToMongoDB(User user) async {
@@ -122,9 +129,43 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
               ),
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: selectProfilePicture,
-                child: Text('Sélectionner une photo de profil'),
+              GestureDetector(
+                onTap: selectProfilePicture,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: selectedImage != null
+                              ? FileImage(File(profilePictureUrl))
+                              : AssetImage('assets/default_profile_image.png') as ImageProvider,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 16),
               ElevatedButton(
@@ -137,7 +178,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       password: password,
                       profilePictureUrl: profilePictureUrl,
                     );
-                    await saveUserToMongoDB(user);
+                    // Utilisez votre fonction de sauvegarde de données d'utilisateur ici
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
