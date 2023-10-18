@@ -7,14 +7,14 @@ import 'package:mongo_dart/mongo_dart.dart';
 class MongoDatabase {
   static connect() async {
     try {
-      var db = await Db.create(mongodbUrl);
+      var db = await Db.create(MONGODB_URL);
       await db.open();
       inspect(db);
       var status = await db.serverStatus();
       if (kDebugMode) {
         print(status);
       }
-      var collection = db.collection(collectionName);
+      var collection = db.collection(COLLECTION_NAME);
       if (kDebugMode) {
         print(await collection.find().toList());
       }
