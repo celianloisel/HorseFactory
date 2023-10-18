@@ -10,7 +10,7 @@ class MongoDatabase {
       _db = await Db.create(mongodbUrl);
       await _db.open();
       if (kDebugMode) {
-        print("Connection à MongoDB réussie !");
+        print("Connexion à la base de données réussie !");
       }
     } catch (e) {
       if (kDebugMode) {
