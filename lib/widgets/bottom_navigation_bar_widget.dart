@@ -20,7 +20,6 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   void initState() {
     super.initState();
 
-    // Vérifiez si l'utilisateur est null et créez un utilisateur par défaut en cas de null
     final user = widget.user ?? User(
       email: 'example@email.com',
       password: 'your_password',

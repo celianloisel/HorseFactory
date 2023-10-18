@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/login_page.dart';
-import 'package:horse_factory/services/authentication_service.dart';
 import 'package:horse_factory/utils/mongo_database.dart';
 import 'package:horse_factory/widgets/bottom_navigation_bar_widget.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +11,8 @@ import 'models/user.dart';
 
 void main() async {
   try {
+    await MongoDatabase().connect();
     WidgetsFlutterBinding.ensureInitialized();
-
-    // Gestion des erreurs potentielles lors de la connexion à la base de données MongoDB.
-    await MongoDatabase.connect();
-
     SystemChrome.setPreferredOrientations(
       [
         DeviceOrientation.portraitUp,
@@ -29,10 +25,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => AuthModel()),
           StreamProvider<User?>(
             initialData: null,
-            create: (context) => AuthService().user,
-          ),
-          Provider<AuthService>(
-            create: (_) => AuthService(),
+            create: (context) => MongoDatabase().user
           ),
         ],
         child: MyApp(),
@@ -69,3 +62,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

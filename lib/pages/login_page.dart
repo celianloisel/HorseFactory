@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/registration_page.dart';
-import 'package:horse_factory/services/authentication_service.dart';
-import 'package:mongo_dart/mongo_dart.dart' show Db, ModifierBuilder, where;
 import 'package:provider/provider.dart';
 
-import '../constants/database.dart';
 import '../models/auth.dart';
+import '../utils/mongo_database.dart';
 import '../widgets/bottom_navigation_bar_widget.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,25 +15,18 @@ class _LoginState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late AuthService _authService;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _authService = Provider.of<AuthService>(context);
-  }
+  final mongoDatabase = MongoDatabase();
 
   Future<void> _login() async {
-    print('loginnnnnnnnnnnn');
     if (_formKey.currentState!.validate()) {
-      print('Je suis dans if');
       final userName = _userNameController.text;
       final password = _passwordController.text;
 
       try {
-        final user = await _authService.checkUserInMongoDB(userName);
+        final user = await mongoDatabase.checkUserInMongoDB(userName);
 
         if (user != null && user.password == password) {
+          await mongoDatabase.signInWithUserNameAndPassword(userName, password, context);
           Provider.of<AuthModel>(context, listen: false).login(user);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationBarWidget(user: user)));
         } else {
@@ -51,7 +42,6 @@ class _LoginState extends State<LoginPage> {
     }
   }
 
-
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -64,6 +54,7 @@ class _LoginState extends State<LoginPage> {
     TextEditingController userNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
+    TextEditingController confirmNewPasswordController = TextEditingController();
 
     showDialog(
       context: context,
@@ -83,7 +74,21 @@ class _LoginState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: newPasswordController,
-                decoration: InputDecoration(labelText: 'Nouveau Mot de Passe'),
+                decoration: InputDecoration(labelText: 'Nouveau mot de passe'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Le mot de passe ne peut pas être vide.';
+                  } else if (value.length < 6) {
+                    return 'Le mot de passe doit comporter au moins 6 caractères.';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: confirmNewPasswordController,
+                decoration: InputDecoration(labelText: 'Confirmer Nouveau Mot de Passe'),
+                obscureText: true,
               ),
             ],
           ),
@@ -93,35 +98,33 @@ class _LoginState extends State<LoginPage> {
                 String userName = userNameController.text;
                 String email = emailController.text;
                 String newPassword = newPasswordController.text;
+                String confirmNewPassword = confirmNewPasswordController.text;
 
-                var db = await Db.create(MONGODB_URL);
-                await db.open();
-                final usersCollection = db.collection(COLLECTION_NAME);
-
-                final query = where.eq('userName', userName).eq('email', email);
-                final userMap = await usersCollection.findOne(query);
-
-                if (userMap != null) {
-                  // Utilisateur trouvé, mettez à jour le mot de passe avec le nouveau mot de passe saisi
-                  final updateBuilder = ModifierBuilder();
-                  updateBuilder.set('password', newPassword);
-
-                  await usersCollection.update(query, updateBuilder);
-
-                  // Fermez la boîte de dialogue
-                  Navigator.of(context).pop();
-                } else {
-                  showError('Aucun utilisateur trouvé avec cet username et email.');
+                if (newPassword.length < 6) {
+                  showError('Le mot de passe doit comporter au moins 6 caractères.');
+                  return;
                 }
 
-                await db.close();
+                if (newPassword == confirmNewPassword) {
+                  try {
+                    await mongoDatabase.resetPassword(userName, email, newPassword);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Mot de passe réinitialisé avec succès.'),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    showError('Une erreur s\'est produite lors de la réinitialisation du mot de passe : $e');
+                  }
+                } else {
+                  showError('Les mots de passe ne correspondent pas.');
+                }
               },
               child: Text('Réinitialiser le mot de passe'),
             ),
-
             TextButton(
               onPressed: () {
-                // Fermez la boîte de dialogue
                 Navigator.of(context).pop();
               },
               child: Text('Annuler'),
@@ -131,7 +134,6 @@ class _LoginState extends State<LoginPage> {
       },
     );
   }
-
 
 
   @override

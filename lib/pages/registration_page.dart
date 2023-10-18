@@ -1,10 +1,9 @@
-import 'package:mongo_dart/mongo_dart.dart' show Db;
-import 'package:horse_factory/constants/database.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+
+import '../utils/mongo_database.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -17,8 +16,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String email = '';
   String password = '';
   String profilePictureUrl = '';
-
   Image? selectedImage;
+
+  final mongoDatabase = MongoDatabase();
 
   String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
@@ -38,8 +38,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value == null || value.isEmpty) {
       return 'Veuillez entrer un mot de passe';
     }
+    if (value.length < 6) {
+      return 'Le mot de passe doit comporter au moins 6 caractères';
+    }
     return null;
   }
+
 
   void selectProfilePicture() async {
     showModalBottomSheet(
@@ -69,28 +73,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  Future<void> saveUserToMongoDB(User user) async {
-    try {
-      var db = await Db.create(MONGODB_URL);
-      await db.open();
-
-      final usersCollection = db.collection(COLLECTION_NAME);
-
-      final userMap = user.toMap();
-
-      await usersCollection.insert(userMap);
-
-      await db.close();
-
-      Navigator.of(context).pop();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Une erreur s\'est produite lors de l\'inscription : $e'),
-        ),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +160,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       password: password,
                       profilePictureUrl: profilePictureUrl,
                     );
-                    // Utilisez votre fonction de sauvegarde de données d'utilisateur ici
+                    try {
+                      await mongoDatabase.saveUserToMongoDB(user);
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Une erreur s\'est produite lors de l\'inscription : $e'),
+                        ),
+                      );
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

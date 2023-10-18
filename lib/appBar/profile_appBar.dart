@@ -4,18 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../models/auth.dart';
 import '../pages/login_page.dart';
-import '../services/authentication_service.dart';
 
 class ProfileAppBar extends StatelessWidget {
   final User? user;
-  final List<OverlayEntry> _overlayEntries;
-  final AuthService _authService;
 
   const ProfileAppBar({
     this.user,
     required List<OverlayEntry> overlayEntries,
-    required AuthService authService,
-  }) : _overlayEntries = overlayEntries, _authService = authService;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +24,16 @@ class ProfileAppBar extends StatelessWidget {
             TextSpan(
               text: '${user!.userName}\n',
               style: TextStyle(
-                color: Colors.white, // Texte en blanc
-                fontSize: 20, // Taille de la police
-                fontWeight: FontWeight.bold, // Gras
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
             TextSpan(
               text: '${user!.email}',
               style: TextStyle(
-                color: Colors.white, // Texte en blanc
-                fontSize: 16, // Taille de la police
+                color: Colors.white,
+                fontSize: 16,
               ),
             ),
           ],
