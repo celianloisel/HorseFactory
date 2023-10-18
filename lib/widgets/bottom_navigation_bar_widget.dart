@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
 
@@ -16,6 +17,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   final List<Widget> _widgetOptions = <Widget>[
     const HomePage(title: "Home Page"),
     const TestPage(title: "Test Page"),
+    const LessonsPage(title: "Lessons")
   ];
 
   void _onItemTapped(int index) {
@@ -40,6 +42,8 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             icon: Icon(Icons.add),
             label: 'Test',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.business_sharp), label: 'Lessons')
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
