@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:horse_factory/models/user.dart';
 import '../appBar/profile_appBar.dart';
 

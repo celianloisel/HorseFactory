@@ -147,7 +147,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       userName: userName,
                       email: email,
                       password: password,
-                      profilePictureUrl: profilePictureUrl, // Utilisez la variable profilePictureUrl ici
+                      profilePictureUrl: profilePictureUrl,
                     );
                     try {
                       await mongoDatabase.saveUserToMongoDB(user);

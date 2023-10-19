@@ -45,7 +45,7 @@ class ProfileAppBar extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: FileImage(File(user!.profilePictureUrl!)),  // Utilisez FileImage pour charger une image à partir d'un fichier local
+                image: FileImage(File(user!.profilePictureUrl!)),
                 fit: BoxFit.cover,
               ),
             ),
