@@ -7,7 +7,8 @@ import '../models/user.dart';
 class BottomNavigationBarWidget extends StatefulWidget {
   final User? user;
 
-  const BottomNavigationBarWidget({Key? key, required this.user}) : super(key: key);
+  const BottomNavigationBarWidget({Key? key, required this.user})
+      : super(key: key);
 
   @override
   State<BottomNavigationBarWidget> createState() =>
@@ -22,14 +23,15 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   void initState() {
     super.initState();
 
-    final user = widget.user ?? User(
-      email: 'example@email.com',
-      password: 'your_password',
-      profilePictureUrl: 'https://example.com/profile.png',
-      userName: 'your_username',
-    );
+    final user = widget.user ??
+        User(
+          email: 'example@email.com',
+          password: 'your_password',
+          profilePictureUrl: 'https://example.com/profile.png',
+          userName: 'your_username',
+        );
 
-    final List<Widget> _widgetOptions = <Widget>[
+    _widgetOptions = <Widget>[
       HomePage(user: user),
       const TestPage(title: "Test Page"),
       const LessonsPage(title: "Lessons")
