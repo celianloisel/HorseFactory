@@ -34,7 +34,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     _widgetOptions = <Widget>[
       HomePage(user: user),
       const TestPage(title: "Test Page"),
-      const LessonsPage(title: "Lessons")
+      LessonsPage(user: user)
     ];
   }
 
