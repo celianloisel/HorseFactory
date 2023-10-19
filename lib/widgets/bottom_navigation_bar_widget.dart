@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/home_page.dart';
+import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/stable_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
-import '../models/user.dart';
 
 import '../models/user.dart';
 
@@ -14,7 +13,6 @@ class BottomNavigationBarWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-
   _BottomNavigationBarWidgetState createState() =>
       _BottomNavigationBarWidgetState();
 }
@@ -27,16 +25,16 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   void initState() {
     super.initState();
 
-
-    final user = widget.user ?? User(
-      email: 'example@email.com',
-      password: 'your_password',
-      profilePictureUrl: 'https://example.com/profile.png',
-      userName: 'your_username',
-      age: 'your_age',
-      phoneNumber: 'your_phone_number',
-      ffe: 'your_ffe',
-    );
+    final user = widget.user ??
+        User(
+          email: 'example@email.com',
+          password: 'your_password',
+          profilePictureUrl: 'https://example.com/profile.png',
+          userName: 'your_username',
+          age: 'your_age',
+          phoneNumber: 'your_phone_number',
+          ffe: 'your_ffe',
+        );
 
     _widgetOptions = <Widget>[
       HomePage(user: user),
@@ -73,10 +71,14 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             label: 'Test',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.business_sharp), label: 'Lessons')
+            icon: Icon(Icons.business_sharp),
+            label: 'Lessons',
+          )
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.black, // Set icon color to black
       ),
     );
   }
