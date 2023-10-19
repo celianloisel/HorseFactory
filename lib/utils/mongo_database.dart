@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/constants/database.dart';
+import 'package:horse_factory/models/party.dart';
+import 'package:horse_factory/models/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../models/user.dart';
-
 class MongoDatabase {
-  final BehaviorSubject<User?> _userSubject = BehaviorSubject<User?>.seeded(null);
+  final BehaviorSubject<User?> _userSubject =
+      BehaviorSubject<User?>.seeded(null);
+
   Stream<User?> get user => _userSubject.stream;
   static late Db _db;
 
@@ -55,7 +57,6 @@ class MongoDatabase {
 
   // --------------------Login--------------------
 
-
   Future<User?> checkUserInMongoDB(String userName) async {
     final usersCollection = _db.collection('users');
 
@@ -72,8 +73,7 @@ class MongoDatabase {
     } catch (e) {
       print("Erreur lors de la recherche de l'utilisateur : $e");
       return null;
-    } finally {
-    }
+    } finally {}
   }
 
   Future<void> signInWithUserNameAndPassword(
@@ -128,9 +128,46 @@ class MongoDatabase {
     }
   }
 
-  // --------------------Home--------------------
 
+  // --------------------Party--------------------
 
-  // --------------------Profile--------------------
+  Future<void> createParty(Party party) async {
+    await _db.collection('parties').insert(party.toJson());
+  }
 
+  Future<List> getParties() async {
+    final partiesCollection = _db.collection('parties');
+
+    final query = where.sortBy('dateTime', descending: true);
+    final partiesMap = await partiesCollection.find(query).toList();
+
+    final parties =
+        partiesMap.map((partyMap) => Party.fromJson(partyMap)).toList();
+
+    return parties;
+  }
+
+  Future<void> addParticipant(ObjectId partyId, ObjectId userId) async {
+    final partiesCollection = _db.collection('parties');
+
+    final query = where.eq('_id', partyId);
+    final updateBuilder = ModifierBuilder();
+    updateBuilder.push('participants', userId);
+
+    await partiesCollection.update(query, updateBuilder);
+  }
+
+  Future<Party?> getPartyById(ObjectId partyId) async {
+    final partiesCollection = _db.collection('parties');
+
+    final query = where.eq('_id', partyId);
+    final partyMap = await partiesCollection.findOne(query);
+
+    if (partyMap != null) {
+      final party = Party.fromJson(partyMap);
+      return party;
+    } else {
+      return null;
+    }
+  }
 }
