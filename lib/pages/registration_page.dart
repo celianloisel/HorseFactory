@@ -1,6 +1,7 @@
 import 'package:horse_factory/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 import '../utils/mongo_database.dart';
@@ -44,35 +45,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-
   void selectProfilePicture() async {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.photo),
-              title: Text('Sélectionner une photo depuis la galerie'),
-              onTap: () async {
-                Navigator.pop(context);
-                final imagePicker = ImagePicker();
-                final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-                if (image != null) {
-                  setState(() {
-                    selectedImage = Image.file(File(image.path));
-                    profilePictureUrl = image.path;
-                  });
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+    final imagePicker = ImagePicker();
+    final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
 
+    if (image != null) {
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final newFile = File('${appDir.path}/$fileName.jpg');
+      await newFile.writeAsBytes(await image.readAsBytes());
+
+      setState(() {
+        selectedImage = Image.file(newFile);
+        profilePictureUrl = newFile.path;
+        print(profilePictureUrl);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +112,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: selectedImage != null
-                              ? FileImage(File(profilePictureUrl))
+                              ? selectedImage!.image
                               : AssetImage('assets/default_profile_image.png') as ImageProvider,
                         ),
                       ),
@@ -158,7 +147,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       userName: userName,
                       email: email,
                       password: password,
-                      profilePictureUrl: profilePictureUrl,
+                      profilePictureUrl: profilePictureUrl, // Utilisez la variable profilePictureUrl ici
                     );
                     try {
                       await mongoDatabase.saveUserToMongoDB(user);
@@ -180,12 +169,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
                 child: Text('S\'inscrire'),
               ),
-              if (selectedImage != null)
-                Container(
-                  width: 50,
-                  height: 50,
-                  child: selectedImage,
-                ),
             ],
           ),
         ),

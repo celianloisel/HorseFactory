@@ -1,9 +1,9 @@
-import 'package:horse_factory/models/user.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/auth.dart';
-import '../pages/login_page.dart';
+import 'package:horse_factory/models/auth.dart';
+import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/pages/login_page.dart';
 
 class ProfileAppBar extends StatelessWidget {
   final User? user;
@@ -45,7 +45,7 @@ class ProfileAppBar extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(user!.profilePictureUrl!),
+                image: FileImage(File(user!.profilePictureUrl!)),  // Utilisez FileImage pour charger une image à partir d'un fichier local
                 fit: BoxFit.cover,
               ),
             ),
@@ -99,6 +99,9 @@ class ProfileAppBar extends StatelessWidget {
       ],
     );
   }
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
   Future<void> signOut(BuildContext context) async {
     print('Log out');
