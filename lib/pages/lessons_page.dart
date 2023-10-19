@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:horse_factory/utils/date_utils.dart';
