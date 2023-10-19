@@ -1,11 +1,8 @@
-/**
- * La classe Lesson représente un cours d'équitation de la collection "lessons"
- * de la base de données.
- */
+import 'package:mongo_dart/mongo_dart.dart';
 
 enum Place {
-  indoor_area,
-  outdoor_area,
+  indoor_arena,
+  outdoor_arena,
 }
 
 enum Discipline {
@@ -22,13 +19,13 @@ enum Status {
 }
 
 class Lesson {
-  final String _id;
+  final ObjectId _id;
   final Place _place;
   final DateTime _date;
   final int _duration; // durée en minutes
   final Discipline _discipline;
   final Status _status;
-  final String _userId;
+  final ObjectId _userId;
 
   Lesson({
     required String id,
@@ -38,7 +35,9 @@ class Lesson {
     required String discipline,
     required String status,
     required String userId,
-  })  : _id = id,
+  })  :
+        // Convert ObjectId.$oid.toString() en ObjectId
+        _id = ObjectId.fromHexString(id),
         // Convertit String en enum Place
         _place = Place.values.firstWhere((e) => e.toString() == 'Place.$place'),
         _date = date,
@@ -49,7 +48,7 @@ class Lesson {
         // Convertit String en enum Status
         _status =
             Status.values.firstWhere((e) => e.toString() == 'Status.$status'),
-        _userId = userId;
+        _userId = ObjectId.fromHexString(userId);
 
   // Convertit une instance de la classe Lesson en un document MongoDB
   Map<String, dynamic> toMap() {
@@ -77,7 +76,7 @@ class Lesson {
     );
   }
 
-  String get id => _id;
+  ObjectId get id => _id;
 
   Place get place => _place;
 
@@ -89,5 +88,5 @@ class Lesson {
 
   Status get status => _status;
 
-  String get userId => _userId;
+  ObjectId get userId => _userId;
 }
