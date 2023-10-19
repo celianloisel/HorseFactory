@@ -22,7 +22,6 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions;
 
-
   @override
   void initState() {
     super.initState();
@@ -42,7 +41,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
       HomePage(user: user),
       StablePage(title: "Stable", user: user),
       const TestPage(title: "Test Page"),
-      const EditProfile(title: "test")
+      const EditProfile(title: "test"),
       LessonsPage(user: user)
     ];
   }
@@ -74,7 +73,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             label: 'Test',
           ),
           BottomNavigationBarItem(
-            icon:  Icon(Icons.account_circle_outlined),
+            icon: Icon(Icons.account_circle_outlined),
             label: 'users',
           ),
           BottomNavigationBarItem(
@@ -85,7 +84,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black, 
+        unselectedItemColor: Colors.black,
       ),
     );
   }
