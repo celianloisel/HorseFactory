@@ -1,8 +1,7 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:horse_factory/models/user.dart';
-import 'package:horse_factory/pages/profile_page.dart';
+import 'package:flutter/material.dart';
+
+import '../pages/profile_page.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final User? user;
@@ -31,7 +30,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Tooltip(
                   message: 'Votre profil',
                   child: Hero(
-                    tag: user!.profilePictureUrl,
+                    tag: 'user_profile_image',
                     child: Container(
                       width: 40,
                       height: 40,
@@ -39,7 +38,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: FileImage(File(user!.profilePictureUrl)),
+                          image: MemoryImage(user!.profileImageBytes!),
                         ),
                       ),
                     ),

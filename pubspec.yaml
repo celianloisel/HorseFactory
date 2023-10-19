@@ -34,9 +34,7 @@ dependencies:
   provider: ^6.0.5
   path_provider: ^2.1.1
   image_picker: ^1.0.4
-  file_picker: ^6.0.0
   rxdart: ^0.27.7
-  permission_handler: ^11.0.1
   intl: ^0.18.1
 
 
@@ -68,6 +66,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/box_chevaux.png
+    - assets/default_profile_image.png
     - assets/images/
   #   - images/a_dot_ham.jpeg
 

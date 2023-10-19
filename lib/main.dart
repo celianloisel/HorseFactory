@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       home: authModel.user != null ? BottomNavigationBarWidget(user: authModel.user!) : LoginPage(),
+      // ...
     );
   }
 

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:horse_factory/models/auth.dart';
@@ -41,11 +40,11 @@ class ProfileAppBar extends StatelessWidget {
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: Hero(
-          tag: user!.profilePictureUrl!,
+          tag: 'user_profile_image',
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: FileImage(File(user!.profilePictureUrl!)),
+                image: MemoryImage(user!.profileImageBytes!),
                 fit: BoxFit.cover,
               ),
             ),

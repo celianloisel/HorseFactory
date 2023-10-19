@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/registration_page.dart';
 import 'package:provider/provider.dart';
-
 import '../models/auth.dart';
 import '../utils/mongo_database.dart';
 import '../widgets/bottom_navigation_bar_widget.dart';
@@ -26,24 +25,18 @@ class _LoginState extends State<LoginPage> {
         final user = await mongoDatabase.checkUserInMongoDB(userName);
 
         if (user != null && user.password == password) {
-          await mongoDatabase.signInWithUserNameAndPassword(
-              userName, password, context);
+          await mongoDatabase.signInWithUserNameAndPassword(userName, password, context);
           Provider.of<AuthModel>(context, listen: false).login(user);
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BottomNavigationBarWidget(user: user)));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationBarWidget(user: user)));
         } else {
           if (user == null) {
             showError('Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
           } else {
-            showError(
-                'L\'authentification a échoué. Veuillez vérifier vos informations.');
+            showError('L\'authentification a échoué. Veuillez vérifier vos informations.');
           }
         }
       } catch (e) {
-        showError(
-            'Une erreur s\'est produite lors de l\'authentification : $e');
+        showError('Une erreur s\'est produite lors de l\'authentification : $e');
       }
     }
   }
@@ -60,8 +53,7 @@ class _LoginState extends State<LoginPage> {
     TextEditingController userNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
-    TextEditingController confirmNewPasswordController =
-        TextEditingController();
+    TextEditingController confirmNewPasswordController = TextEditingController();
 
     showDialog(
       context: context,
@@ -94,8 +86,7 @@ class _LoginState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: confirmNewPasswordController,
-                decoration: InputDecoration(
-                    labelText: 'Confirmer Nouveau Mot de Passe'),
+                decoration: InputDecoration(labelText: 'Confirmer Nouveau Mot de Passe'),
                 obscureText: true,
               ),
             ],
@@ -109,15 +100,13 @@ class _LoginState extends State<LoginPage> {
                 String confirmNewPassword = confirmNewPasswordController.text;
 
                 if (newPassword.length < 6) {
-                  showError(
-                      'Le mot de passe doit comporter au moins 6 caractères.');
+                  showError('Le mot de passe doit comporter au moins 6 caractères.');
                   return;
                 }
 
                 if (newPassword == confirmNewPassword) {
                   try {
-                    await mongoDatabase.resetPassword(
-                        userName, email, newPassword);
+                    await mongoDatabase.resetPassword(userName, email, newPassword);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Mot de passe réinitialisé avec succès.'),
@@ -125,8 +114,7 @@ class _LoginState extends State<LoginPage> {
                     );
                     Navigator.of(context).pop();
                   } catch (e) {
-                    showError(
-                        'Une erreur s\'est produite lors de la réinitialisation du mot de passe : $e');
+                    showError('Une erreur s\'est produite lors de la réinitialisation du mot de passe : $e');
                   }
                 } else {
                   showError('Les mots de passe ne correspondent pas.');
@@ -145,6 +133,7 @@ class _LoginState extends State<LoginPage> {
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -202,10 +191,7 @@ class _LoginState extends State<LoginPage> {
                         SizedBox(height: 5),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegistrationPage()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
                           },
                           child: Text("Pas encore de compte ?"),
                         ),

@@ -5,14 +5,14 @@ import 'package:horse_factory/models/user.dart';
 class HomePage extends StatelessWidget {
   late User user;
 
-  HomePage({super.key, required this.user});
+  HomePage({required this.user});
 
   @override
   Widget build(BuildContext context) {
     String welcomeMessage = 'Bienvenue, Utilisateur ${user?.email}';
 
     if (user?.userName != null && user!.userName.isNotEmpty) {
-      welcomeMessage = 'Bienvenue, ${user.userName}';
+      welcomeMessage = 'Bienvenue, ${user.userName} ${(user.id).$oid.toString()}';
     }
 
     return Scaffold(
@@ -22,10 +22,9 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Container(
               height: 300,
-
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/box_chevaux.png'),
+                  image: AssetImage('assets/box_chevaux.png'),
                   fit: BoxFit.cover,
                 ),
               ),

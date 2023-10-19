@@ -2,15 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/constants/database.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
-import 'package:mongo_dart/mongo_dart.dart';
 import 'package:rxdart/rxdart.dart';
 
 class MongoDatabase {
-  final BehaviorSubject<User?> _userSubject =
-      BehaviorSubject<User?>.seeded(null);
-  
+  final BehaviorSubject<User?> _userSubject = BehaviorSubject<User?>.seeded(null);
+
   Stream<User?> get user => _userSubject.stream;
   static late Db _db;
 
@@ -28,10 +27,11 @@ class MongoDatabase {
     }
   }
 
+
   DbCollection getCollection(String collectionName) {
     return _db.collection(collectionName);
   }
-
+  
   void showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -61,6 +61,7 @@ class MongoDatabase {
 
   // --------------------Login--------------------
 
+
   Future<User?> checkUserInMongoDB(String userName) async {
     final usersCollection = _db.collection('users');
 
@@ -70,6 +71,12 @@ class MongoDatabase {
 
       if (userMap != null) {
         final user = User.fromJson(userMap);
+        final profileImageBytesDynamic = userMap['profileImageBytes'];
+
+        if (profileImageBytesDynamic is List<int>) {
+          user.profileImageBytes = Uint8List.fromList(profileImageBytesDynamic);
+        }
+
         return user;
       } else {
         return null;
@@ -77,8 +84,9 @@ class MongoDatabase {
     } catch (e) {
       print("Erreur lors de la recherche de l'utilisateur : $e");
       return null;
-    } finally {}
+    }
   }
+
 
   Future<void> signInWithUserNameAndPassword(
       String userName, String password, BuildContext context) async {
@@ -101,25 +109,24 @@ class MongoDatabase {
             age: user.age,
             phoneNumber: user.phoneNumber,
             ffe: user.ffe,
-            profilePictureUrl: user.profilePictureUrl,
+            profileImageBytes: user.profileImageBytes,
+
           );
           _userSubject.add(user);
         } else {
           showSnackBar(context, 'Mot de passe incorrect. Veuillez réessayer.');
         }
       } else {
-        showSnackBar(
-            context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
+        showSnackBar(context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
       }
     } catch (e) {
       print("Erreur lors de l'authentification : $e");
-      showSnackBar(
-          context, "Une erreur s'est produite lors de l'authentification.");
+      showSnackBar(context, "Une erreur s'est produite lors de l'authentification.");
     }
   }
 
-  Future<void> resetPassword(
-      String userName, String email, String newPassword) async {
+  
+  Future<void> resetPassword(String userName, String email, String newPassword) async {
     final usersCollection = _db.collection('users');
 
     final query = where.eq('userName', userName).eq('email', email);
@@ -134,6 +141,11 @@ class MongoDatabase {
       throw Exception('Aucun utilisateur trouvé avec cet username et email.');
     }
   }
+
+  // --------------------Home--------------------
+
+
+  // --------------------Profile--------------------
 
 
 
