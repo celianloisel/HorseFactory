@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:horse_factory/models/user.dart';
 import 'package:mongo_dart/mongo_dart.dart' hide State;
 
 import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/utils/mongo_database.dart';
 
 class LessonsPage extends StatefulWidget {
-  const LessonsPage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  late User user;
+
+  LessonsPage({Key? key, required this.user}) : super(key: key);
+
   @override
   State<LessonsPage> createState() => _LessonsPageState();
 }
@@ -24,8 +27,10 @@ class _LessonsPageState extends State<LessonsPage> {
   }
 
   Future<void> _getLessons() async {
+    ObjectId userId = widget.user.id;
+    SelectorBuilder query = where.eq('userId', userId);
     final List<Map<String, dynamic>> data =
-        await lessonsCollection.find().toList();
+        await lessonsCollection.find(query).toList();
     setState(() {
       _lessons = data
           .map((lessonData) =>
@@ -285,19 +290,17 @@ class _LessonsPageState extends State<LessonsPage> {
                       // print("userId: $userId");
 
                       // Créer une instance Lesson
+                      String userIdString = widget.user.id.$oid.toString();
                       Lesson newLesson = Lesson(
                         id: id, // Pour générer un nouvel ID unique
                         place: place == 'Indoor arena'
                             ? 'indoor_arena'
-                            : 'outdoor_arena', // Convertit String en enum Place
+                            : 'outdoor_arena',
                         date: finalDateTime,
                         duration: duration == '30 minutes' ? 30 : 60,
                         discipline: discipline,
-                        status:
-                            'pending', // Statut par défaut lors de la création
-                        userId: ObjectId()
-                            .$oid
-                            .toString(), // Remplacez par l'ID d'utilisateur approprié
+                        status: 'pending',
+                        userId: userIdString,
                       );
 
                       final lessonObject = newLesson.toMap();
