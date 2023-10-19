@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/constants/database.dart';
-import 'package:horse_factory/models/party.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:rxdart/rxdart.dart';
 
