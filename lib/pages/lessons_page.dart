@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/utils/date_utils.dart';
+import 'package:horse_factory/utils/enum_utils.dart';
 import 'package:mongo_dart/mongo_dart.dart' hide State;
 
 import 'package:horse_factory/models/lesson.dart';
@@ -15,7 +18,7 @@ class LessonsPage extends StatefulWidget {
 }
 
 class _LessonsPageState extends State<LessonsPage> {
-  List<Lesson> _lessons = [];
+  final List<Lesson> _lessons = [];
   final lessonsCollection = MongoDatabase().getCollection("lessons");
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -28,15 +31,22 @@ class _LessonsPageState extends State<LessonsPage> {
 
   Future<void> _getLessons() async {
     ObjectId userId = widget.user.id;
-    SelectorBuilder query = where.eq('userId', userId);
+
+    SelectorBuilder query =
+        where.eq('userId', userId).sortBy('date', descending: true);
     final List<Map<String, dynamic>> data =
         await lessonsCollection.find(query).toList();
-    setState(() {
-      _lessons = data
-          .map((lessonData) =>
-              Lesson.fromMap(lessonData, lessonData['_id'].$oid.toString()))
-          .toList();
-    });
+
+    for (var lessonData in data) {
+      try {
+        setState(() {
+          _lessons.add(Lesson.fromMap(lessonData, lessonData['_id']));
+        });
+      } catch (e) {
+        print(
+            "Impossible de convertir l'objet suivant en cours : $lessonData : $e");
+      }
+    }
   }
 
   @override
@@ -50,7 +60,7 @@ class _LessonsPageState extends State<LessonsPage> {
         itemBuilder: (context, index) {
           final lesson = _lessons[index];
 
-          late final icon;
+          late final Icon icon;
           switch (lesson.status.name) {
             case "approved":
               icon = const Icon(Icons.check);
@@ -63,7 +73,7 @@ class _LessonsPageState extends State<LessonsPage> {
               break;
           }
 
-          late final color;
+          late final Color color;
           switch (lesson.status.name) {
             case "approved" || "completed":
               color = Colors.green;
@@ -76,31 +86,37 @@ class _LessonsPageState extends State<LessonsPage> {
               break;
           }
 
-          // Retire la timezone de la date
-          final date = lesson.date
-              .toString()
-              .substring(0, lesson.date.toString().length - 6);
+          final date = getDateTimeString(lesson.date);
 
           // Affiche "x min" si minutes inférieur à 60, sinon affiche au format "HHhmm"
-          late final duration;
+          late final String duration;
           if (lesson.duration < 60) {
-            duration = "${lesson.duration} min";
+            duration = "${lesson.duration}min";
           } else {
-            duration = "${lesson.duration ~/ 60}h${lesson.duration % 60} min";
+            String hours = (lesson.duration ~/ 60).toString();
+            String minutes = (lesson.duration % 60).toString();
+            if (minutes.length == 1) minutes = "0$minutes";
+
+            duration = "${hours}h$minutes";
           }
 
           return Card(
             child: ListTile(
               leading: icon,
-              title: Text(lesson.discipline.name),
-              subtitle: Row(
+              title: Text(getEnumValueString(lesson.discipline)),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(date),
-                  const SizedBox(width: 10),
-                  Text(duration),
+                  Text(getEnumValueString(lesson.place)),
+                  Row(
+                    children: [
+                      Text(date),
+                      const SizedBox(width: 10.0),
+                    ],
+                  )
                 ],
               ),
-              trailing: Text(lesson.status.name),
+              trailing: Text(duration),
               tileColor: color,
             ),
           );
@@ -122,23 +138,16 @@ class _LessonsPageState extends State<LessonsPage> {
         var place = "Indoor arena";
         var duration = "30 minutes";
 
-        DateTime _selectedDate = DateTime.now();
-        TimeOfDay _selectedTime = TimeOfDay.now();
+        DateTime selectedDate = DateTime.now();
+        TimeOfDay selectedTime = TimeOfDay.now();
 
         return AlertDialog(
-          title: Text('Plan new lesson'),
+          title: const Text('Plan new lesson'),
           content: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                /*
-                Formulaire avec :
-                  - Dropdown pour la discipline : Dressage, Show Jumping et Endurance
-                  - Dropdown pour le lieu : Indoor arena, Outdoor arena
-                  - Selecteur pour la date et l'heure
-                  - Dropdown pour la durée : 30 minutes, 1 hour
-                 */
                 // Discipline
                 DropdownButtonFormField(
                   value: discipline,
@@ -198,130 +207,111 @@ class _LessonsPageState extends State<LessonsPage> {
                   }).toList(),
                 ),
 
-                // Date et heure
-                // Sélecteur de date
+                // Date
                 ElevatedButton(
                   onPressed: () async {
                     final DateTime? pickedDate = await showDatePicker(
                       context: context,
-                      initialDate: _selectedDate,
+                      initialDate: selectedDate,
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2100),
                     );
-                    if (pickedDate != null && pickedDate != _selectedDate)
+                    if (pickedDate != null && pickedDate != selectedDate) {
                       setState(() {
-                        _selectedDate = pickedDate;
+                        selectedDate = pickedDate;
                       });
+                    }
                   },
                   child: Text(
-                      "Select date: ${_selectedDate.toLocal().toString().split(' ')[0]}"),
+                      "Select date: ${selectedDate.toLocal().toString().split(' ')[0]}"),
                 ),
-                SizedBox(height: 10.0),
-
-                // Sélecteur d'heure
+                const SizedBox(height: 10.0),
+                // Heure
                 ElevatedButton(
                   onPressed: () async {
                     final TimeOfDay? pickedTime = await showTimePicker(
                       context: context,
-                      initialTime: _selectedTime,
+                      initialTime: selectedTime,
                     );
-                    if (pickedTime != null && pickedTime != _selectedTime)
+                    if (pickedTime != null && pickedTime != selectedTime) {
                       setState(() {
-                        _selectedTime = pickedTime;
+                        selectedTime = pickedTime;
                       });
+                    }
                   },
-                  child: Text("Select time: ${_selectedTime.format(context)}"),
+                  child: Text("Select time: ${selectedTime.format(context)}"),
                 ),
                 const SizedBox(height: 20.0),
 
-                /*
-                TextButton pour :
-                - Annuler l'ajout de cours d'équitation
-                - Fermer la boîte de dialogue
-                 */
-
-                /*
-                TextButton pour :
-                - Créer une instance Lesson
-                - L'enregistrer dans la base de données en la convertissant en Map
-                - Fermer la boîte de dialogue
-                 */
-                TextButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      DateTime finalDateTime = DateTime(
-                        _selectedDate.year,
-                        _selectedDate.month,
-                        _selectedDate.day,
-                        _selectedTime.hour,
-                        _selectedTime.minute,
-                      );
-
-                      switch (discipline) {
-                        case "Dressage":
-                          discipline = "dressage";
-                          break;
-                        case "Show Jumping":
-                          discipline = "show_jumping";
-                          break;
-                        case "Endurance":
-                          discipline = "endurance";
-                          break;
-                      }
-
-                      final String id = ObjectId()
-                          .$oid
-                          .toString(); // Pour générer un nouvel ID unique
-                      place = place == 'Indoor arena'
-                          ? 'indoor_arena'
-                          : 'outdoor_arena'; // Convertit String en enum Place
-                      final int durationMinutes =
-                          duration == '30 minutes' ? 30 : 60;
-
-                      print("id: $id");
-                      print("place: $place");
-                      print("date: $finalDateTime");
-                      print("duration: $durationMinutes");
-                      print("discipline: $discipline");
-                      print("status: pending");
-                      final String userId = ObjectId()
-                          .$oid
-                          .toString(); // Remplacez par l'ID d'utilisateur approprié
-                      // print("userId: $userId");
-
-                      // Créer une instance Lesson
-                      String userIdString = widget.user.id.$oid.toString();
-                      Lesson newLesson = Lesson(
-                        id: id, // Pour générer un nouvel ID unique
-                        place: place == 'Indoor arena'
-                            ? 'indoor_arena'
-                            : 'outdoor_arena',
-                        date: finalDateTime,
-                        duration: duration == '30 minutes' ? 30 : 60,
-                        discipline: discipline,
-                        status: 'pending',
-                        userId: userIdString,
-                      );
-
-                      final lessonObject = newLesson.toMap();
-
-                      // Sauvegarde dans la base de données
-                      final lessonsCollection =
-                          MongoDatabase().getCollection("lessons");
-
-                      try {
-                        setState(() {
-                          _lessons.add(newLesson);
-                        });
-                        await lessonsCollection.insert(newLesson.toMap());
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
                         Navigator.of(context).pop();
-                      } catch (e) {
-                        print('Erreur lors de la création du cours : $e');
-                      }
-                    }
-                  },
-                  child: const Text("Add lesson"),
-                ),
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          DateTime finalDateTime = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
+
+                          switch (discipline) {
+                            case "Dressage":
+                              discipline = "dressage";
+                              break;
+                            case "Show Jumping":
+                              discipline = "showJumping";
+                              break;
+                            case "Endurance":
+                              discipline = "endurance";
+                              break;
+                          }
+
+                          place = place == 'Indoor arena'
+                              ? 'indoorArena'
+                              : 'outdoorArena';
+
+                          final int durationMinutes =
+                              duration == '30 minutes' ? 30 : 60;
+
+                          try {
+                            // Créer une instance Lesson
+                            ObjectId userId = widget.user.id;
+                            Lesson newLesson = Lesson(
+                              discipline: discipline,
+                              place: place,
+                              date: finalDateTime,
+                              duration: durationMinutes,
+                              userId: userId,
+                            );
+
+                            final lessonObject = newLesson.toMap();
+
+                            // Sauvegarde dans la base de données
+                            final lessonsCollection =
+                                MongoDatabase().getCollection("lessons");
+
+                            setState(() {
+                              _lessons.add(newLesson);
+                            });
+                            await lessonsCollection.insert(newLesson.toMap());
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            print('Erreur lors de la création du cours : $e');
+                          }
+                        }
+                      },
+                      child: const Text("Add lesson"),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
