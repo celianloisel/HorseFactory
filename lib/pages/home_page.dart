@@ -22,6 +22,7 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Container(
               height: 300,
+
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/box_chevaux.png'),

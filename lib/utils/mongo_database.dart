@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/constants/database.dart';
@@ -93,6 +94,9 @@ class MongoDatabase {
             userName: user.userName,
             email: user.email,
             password: user.password,
+            age: user.age,
+            phoneNumber: user.phoneNumber,
+            ffe: user.ffe,
             profilePictureUrl: user.profilePictureUrl,
           );
           _userSubject.add(user);
@@ -100,18 +104,15 @@ class MongoDatabase {
           showSnackBar(context, 'Mot de passe incorrect. Veuillez réessayer.');
         }
       } else {
-        showSnackBar(
-            context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
+        showSnackBar(context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
       }
     } catch (e) {
       print("Erreur lors de l'authentification : $e");
-      showSnackBar(
-          context, "Une erreur s'est produite lors de l'authentification.");
+      showSnackBar(context, "Une erreur s'est produite lors de l'authentification.");
     }
   }
 
-  Future<void> resetPassword(
-      String userName, String email, String newPassword) async {
+  Future<void> resetPassword(String userName, String email, String newPassword) async {
     final usersCollection = _db.collection('users');
 
     final query = where.eq('userName', userName).eq('email', email);
@@ -126,6 +127,7 @@ class MongoDatabase {
       throw Exception('Aucun utilisateur trouvé avec cet username et email.');
     }
   }
+
 
   // --------------------Party--------------------
 

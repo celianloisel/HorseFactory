@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/stable_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
+import '../models/user.dart';
 
 import '../models/user.dart';
 
@@ -24,13 +25,15 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   void initState() {
     super.initState();
 
-    final user = widget.user ??
-        User(
-          email: 'example@email.com',
-          password: 'your_password',
-          profilePictureUrl: 'https://example.com/profile.png',
-          userName: 'your_username',
-        );
+    final user = widget.user ?? User(
+      email: 'example@email.com',
+      password: 'your_password',
+      profilePictureUrl: 'https://example.com/profile.png',
+      userName: 'your_username',
+      age: 'your_age',
+      phoneNumber: 'your_phone_number',
+      ffe: 'your_ffe',
+    );
 
     _widgetOptions = <Widget>[
       HomePage(user: user),
