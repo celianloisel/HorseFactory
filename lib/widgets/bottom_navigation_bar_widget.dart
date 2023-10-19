@@ -3,6 +3,7 @@ import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/stable_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
+import 'package:horse_factory/pages/update.dart';
 
 import '../models/user.dart';
 
@@ -20,6 +21,7 @@ class BottomNavigationBarWidget extends StatefulWidget {
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions;
+
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
       HomePage(user: user),
       StablePage(title: "Stable", user: user),
       const TestPage(title: "Test Page"),
+      const EditProfile(title: "test")
       LessonsPage(user: user)
     ];
   }
@@ -71,6 +74,10 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             label: 'Test',
           ),
           BottomNavigationBarItem(
+            icon:  Icon(Icons.account_circle_outlined),
+            label: 'users',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.business_sharp),
             label: 'Lessons',
           )
@@ -78,7 +85,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black, // Set icon color to black
+        unselectedItemColor: Colors.black, 
       ),
     );
   }
