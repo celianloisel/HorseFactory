@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 class MongoDatabase {
   final BehaviorSubject<User?> _userSubject =
       BehaviorSubject<User?>.seeded(null);
-
+  
   Stream<User?> get user => _userSubject.stream;
   static late Db _db;
 
@@ -19,13 +19,17 @@ class MongoDatabase {
       _db = await Db.create(mongodbUrl);
       await _db.open();
       if (kDebugMode) {
-        print("Connected to MongoDB");
+        print("Connexion à la base de données réussie !");
       }
     } catch (e) {
       if (kDebugMode) {
         print("Erreur lors de la connexion à la base de données : $e");
       }
     }
+  }
+
+  DbCollection getCollection(String collectionName) {
+    return _db.collection(collectionName);
   }
 
   void showSnackBar(BuildContext context, String message) {
@@ -104,15 +108,18 @@ class MongoDatabase {
           showSnackBar(context, 'Mot de passe incorrect. Veuillez réessayer.');
         }
       } else {
-        showSnackBar(context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
+        showSnackBar(
+            context, 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
       }
     } catch (e) {
       print("Erreur lors de l'authentification : $e");
-      showSnackBar(context, "Une erreur s'est produite lors de l'authentification.");
+      showSnackBar(
+          context, "Une erreur s'est produite lors de l'authentification.");
     }
   }
 
-  Future<void> resetPassword(String userName, String email, String newPassword) async {
+  Future<void> resetPassword(
+      String userName, String email, String newPassword) async {
     final usersCollection = _db.collection('users');
 
     final query = where.eq('userName', userName).eq('email', email);
@@ -127,6 +134,7 @@ class MongoDatabase {
       throw Exception('Aucun utilisateur trouvé avec cet username et email.');
     }
   }
+
 
 
   // --------------------Party--------------------

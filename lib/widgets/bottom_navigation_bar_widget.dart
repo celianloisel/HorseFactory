@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/stable_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
@@ -13,6 +14,7 @@ class BottomNavigationBarWidget extends StatefulWidget {
       : super(key: key);
 
   @override
+
   _BottomNavigationBarWidgetState createState() =>
       _BottomNavigationBarWidgetState();
 }
@@ -24,6 +26,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   @override
   void initState() {
     super.initState();
+
 
     final user = widget.user ?? User(
       email: 'example@email.com',
@@ -39,6 +42,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
       HomePage(user: user),
       StablePage(title: "Stable", user: user),
       const TestPage(title: "Test Page"),
+      LessonsPage(user: user)
     ];
   }
 
@@ -68,6 +72,8 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             icon: Icon(Icons.add),
             label: 'Test',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.business_sharp), label: 'Lessons')
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
