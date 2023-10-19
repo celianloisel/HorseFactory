@@ -16,6 +16,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String userName = '';
   String email = '';
   String password = '';
+  String age = '';
+  String phoneNumber = '';
+  String ffe = '';
   String profilePictureUrl = '';
   Image? selectedImage;
 
@@ -147,6 +150,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       userName: userName,
                       email: email,
                       password: password,
+                      age: age,
+                      phoneNumber: phoneNumber,
+                      ffe: ffe,
                       profilePictureUrl: profilePictureUrl,
                     );
                     try {

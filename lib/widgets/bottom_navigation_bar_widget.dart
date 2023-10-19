@@ -25,6 +25,9 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
       password: 'your_password',
       profilePictureUrl: 'https://example.com/profile.png',
       userName: 'your_username',
+      age: 'your_age',
+      phoneNumber: 'your_phone_number',
+      ffe: 'your_ffe',
     );
 
     _widgetOptions = <Widget>[

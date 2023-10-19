@@ -94,6 +94,9 @@ class MongoDatabase {
             userName: user.userName,
             email: user.email,
             password: user.password,
+            age: user.age,
+            phoneNumber: user.phoneNumber,
+            ffe: user.ffe,
             profilePictureUrl: user.profilePictureUrl,
           );
           _userSubject.add(user);
