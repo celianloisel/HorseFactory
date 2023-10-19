@@ -45,6 +45,7 @@ class MongoDatabase {
 
     try {
       final userMap = user.toMap();
+      userMap['roles'] = ['USER'];
       await usersCollection.insert(userMap);
     } catch (e) {
       print("Erreur lors de l'inscription : $e");
@@ -89,6 +90,7 @@ class MongoDatabase {
         if (user.password == password) {
           user.updateUser(
             id: user.id,
+            roles: user.roles,
             userName: user.userName,
             email: user.email,
             password: user.password,

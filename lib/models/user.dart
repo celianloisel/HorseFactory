@@ -3,11 +3,11 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class User with ChangeNotifier {
   late ObjectId id;
+  late List<String> roles = [];
   late String userName;
   late String email;
   late String password;
   late String profilePictureUrl;
-
 
   User({
     ObjectId? id,
@@ -27,9 +27,9 @@ class User with ChangeNotifier {
     }
   }
 
-
   Map<String, dynamic> toMap() {
     return {
+      'roles': roles,
       'userName': userName,
       'email': email,
       'password': password,
@@ -44,7 +44,7 @@ class User with ChangeNotifier {
       email: json['email'] as String,
       password: json['password'] as String,
       profilePictureUrl: json['profilePictureUrl'] as String,
-    );
+    )..roles = List<String>.from(json['roles']);
   }
 
   void updateUser({
@@ -53,6 +53,7 @@ class User with ChangeNotifier {
     required String email,
     required String password,
     required String profilePictureUrl,
+    required List<String> roles,
   }) {
     if (userName.isEmpty) {
       throw Exception("Le nom d'utilisateur ne peut pas être vide.");
@@ -69,7 +70,7 @@ class User with ChangeNotifier {
     this.email = email;
     this.password = password;
     this.profilePictureUrl = profilePictureUrl;
+    this.roles = roles;
     notifyListeners();
   }
-
 }
