@@ -5,7 +5,7 @@ import 'package:horse_factory/models/user.dart';
 class HomePage extends StatelessWidget {
   late User user;
 
-  HomePage({required this.user});
+  HomePage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,10 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Container(
               height: 300,
-              decoration: BoxDecoration(
+
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/box_chevaux.png'),
+                  image: AssetImage('assets/images/box_chevaux.png'),
                   fit: BoxFit.cover,
                 ),
               ),
