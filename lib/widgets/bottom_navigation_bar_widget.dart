@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
+import 'package:horse_factory/pages/update.dart';
 
 class BottomNavigationBarWidget extends StatefulWidget {
   const BottomNavigationBarWidget({Key? key}) : super(key: key);
@@ -16,6 +17,8 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   final List<Widget> _widgetOptions = <Widget>[
     const HomePage(title: "Home Page"),
     const TestPage(title: "Test Page"),
+    const EditProfile(title: "test")
+
   ];
 
   void _onItemTapped(int index) {
@@ -40,6 +43,10 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
             icon: Icon(Icons.add),
             label: 'Test',
           ),
+          BottomNavigationBarItem(
+            icon:  Icon(Icons.account_circle_outlined),
+            label: 'users',
+          )
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
