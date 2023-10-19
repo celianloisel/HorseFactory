@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     String welcomeMessage = 'Bienvenue, Utilisateur ${user?.email}';
 
     if (user?.userName != null && user!.userName.isNotEmpty) {
-      welcomeMessage = 'Bienvenue, ${user.userName}';
+      welcomeMessage = 'Bienvenue, ${user.userName} ${(user.id).$oid.toString()}';
     }
 
     return Scaffold(

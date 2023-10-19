@@ -65,6 +65,12 @@ class MongoDatabase {
 
       if (userMap != null) {
         final user = User.fromJson(userMap);
+        final profileImageBytesDynamic = userMap['profileImageBytes'];
+
+        if (profileImageBytesDynamic is List<int>) {
+          user.profileImageBytes = Uint8List.fromList(profileImageBytesDynamic);
+        }
+
         return user;
       } else {
         return null;
@@ -72,9 +78,10 @@ class MongoDatabase {
     } catch (e) {
       print("Erreur lors de la recherche de l'utilisateur : $e");
       return null;
-    } finally {
     }
   }
+
+
 
   Future<void> signInWithUserNameAndPassword(
       String userName, String password, BuildContext context) async {
@@ -97,7 +104,7 @@ class MongoDatabase {
             age: user.age,
             phoneNumber: user.phoneNumber,
             ffe: user.ffe,
-            profilePictureUrl: user.profilePictureUrl,
+            profileImageBytes: user.profileImageBytes,
           );
           _userSubject.add(user);
         } else {

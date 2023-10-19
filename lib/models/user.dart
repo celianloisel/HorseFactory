@@ -10,14 +10,14 @@ class User with ChangeNotifier {
   late String age;
   late String phoneNumber;
   late String ffe;
-  late String profilePictureUrl;
+  late Uint8List? profileImageBytes;
 
   User({
     ObjectId? id,
     required this.userName,
     required this.email,
     required this.password,
-    required this.profilePictureUrl,
+    required this.profileImageBytes,
     required this.age,
     required this.phoneNumber,
     required this.ffe,
@@ -42,11 +42,20 @@ class User with ChangeNotifier {
       'age': age,
       'phoneNumber': phoneNumber,
       'ffe': ffe,
-      'profilePictureUrl': profilePictureUrl,
+      'profileImageBytes': profileImageBytes,
     };
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
+    final profileImageBytesDynamic = json['profileImageBytes'];
+    Uint8List? profileImageBytes;
+
+    if (profileImageBytesDynamic is List<dynamic>) {
+      profileImageBytes = Uint8List.fromList(profileImageBytesDynamic.cast<int>());
+    } else if (profileImageBytesDynamic is Uint8List) {
+      profileImageBytes = profileImageBytesDynamic;
+    }
+
     return User(
       id: json['_id'] as ObjectId?,
       userName: json['userName'] as String,
@@ -55,16 +64,17 @@ class User with ChangeNotifier {
       age: json['age'] as String,
       phoneNumber: json['phoneNumber'] as String,
       ffe: json['ffe'] as String,
-      profilePictureUrl: json['profilePictureUrl'] as String,
+      profileImageBytes: profileImageBytes,
     )..roles = List<String>.from(json['roles']);
   }
+
 
   void updateUser({
     ObjectId? id,
     required String userName,
     required String email,
     required String password,
-    required String profilePictureUrl,
+    required Uint8List? profileImageBytes,
     required String age,
     required String phoneNumber,
     required String ffe,
@@ -74,10 +84,10 @@ class User with ChangeNotifier {
       throw Exception("Le nom d'utilisateur ne peut pas être vide.");
     }
     if (email.isEmpty || !email.contains('@')) {
-      throw Exception("Veuillez saisir une adresse e-mail valide.");
+    throw Exception("Veuillez saisir une adresse e-mail valide.");
     }
     if (password.isEmpty || password.length < 6) {
-      throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
+    throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
     }
 
     this.id = id ?? ObjectId();
@@ -87,7 +97,7 @@ class User with ChangeNotifier {
     this.age = age;
     this.phoneNumber = phoneNumber;
     this.ffe = ffe;
-    this.profilePictureUrl = profilePictureUrl;
+    this.profileImageBytes = profileImageBytes;
     this.roles = roles;
     notifyListeners();
   }

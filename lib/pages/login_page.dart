@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/registration_page.dart';
 import 'package:provider/provider.dart';
-
 import '../models/auth.dart';
 import '../utils/mongo_database.dart';
 import '../widgets/bottom_navigation_bar_widget.dart';

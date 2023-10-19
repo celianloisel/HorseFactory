@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/test_page.dart';
@@ -23,7 +25,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     final user = widget.user ?? User(
       email: 'example@email.com',
       password: 'your_password',
-      profilePictureUrl: 'https://example.com/profile.png',
+      profileImageBytes: Uint8List(0),
       userName: 'your_username',
       age: 'your_age',
       phoneNumber: 'your_phone_number',
