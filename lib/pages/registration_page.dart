@@ -113,7 +113,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           fit: BoxFit.cover,
                           image: selectedImage != null
                               ? selectedImage!.image
-                              : AssetImage('assets/default_profile_image.png') as ImageProvider,
+                              : AssetImage('assets/images/box_chevaux.png') as ImageProvider,
                         ),
                       ),
                     ),

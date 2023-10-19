@@ -37,6 +37,7 @@ dependencies:
   file_picker: ^6.0.0
   rxdart: ^0.27.7
   permission_handler: ^11.0.1
+  intl: ^0.18.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -67,8 +68,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/box_chevaux.png
-    - assets/default_profile_image.png
+    - assets/images/
+  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
