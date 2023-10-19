@@ -1,18 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:horse_factory/appBar/home_appBar.dart';
+import 'package:horse_factory/models/user.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
+  late User user;
 
-  final String title;
+  HomePage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    String welcomeMessage = 'Bienvenue, Utilisateur ${user?.email}';
+
+    if (user?.userName != null && user!.userName.isNotEmpty) {
+      welcomeMessage = 'Bienvenue, ${user.userName}';
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: const Center(
-        child: Text('Home Page'),
+      appBar: HomeAppBar(user: user),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Container(
+              height: 300,
+
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/box_chevaux.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                welcomeMessage,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
