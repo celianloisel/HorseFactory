@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/utils/date_utils.dart';
+import 'package:horse_factory/utils/enum_utils.dart';
 import 'package:horse_factory/utils/mongo_database.dart';
 import 'package:horse_factory/widgets/pop_up_lesson_content_widget.dart';
 import 'package:horse_factory/widgets/pop_up_widget.dart';
+import 'package:mongo_dart/mongo_dart.dart' hide State;
 
 class LessonsPage extends StatefulWidget {
   const LessonsPage({super.key, required this.user});
@@ -31,7 +34,12 @@ class LessonsPageState extends State<LessonsPage> {
   }
 
   Future<void> loadLessons() async {
-    final lessonsList = await mongoDatabase.getLessons();
+    // Récupère les cours de l'utilisateur, triés par date après maintenant
+    final query = where
+        .eq('userId', widget.user.id)
+        .sortBy('date', descending: false)
+        .gt('date', DateTime.now());
+    final lessonsList = await mongoDatabase.getLessons(query);
     setState(() {
       lessons = lessonsList;
     });
@@ -70,26 +78,37 @@ class LessonsPageState extends State<LessonsPage> {
               itemCount: lessons.length,
               itemBuilder: (BuildContext context, int index) {
                 final lesson = lessons[index];
-                if (lesson.date.isAfter(DateTime.now())) {
-                  return Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.menu_book_outlined),
-                          title: Text(
-                              '${lesson.discipline == Discipline.dressage ? "Dressage" : lesson.discipline == Discipline.endurance ? "Endurance" : "Saut d’obstacle"} - ${lesson.place == Place.indoorArena ? 'Manège' : 'Carrière'}'
-                          ),
-                          subtitle: Text(
-                              'Date: ${lesson.date.day}/${lesson.date.month}/${lesson.date.year} à ${lesson.date.hour}h${lesson.date.minute} - ${lesson.duration} minutes'
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
+                final disciplineString = getEnumValueString(lesson.discipline);
+                final placeString = getEnumValueString(lesson.place);
+                final dateString = getDateTimeString(lesson.date);
+
+                late Icon statusIcon;
+                switch (lesson.status) {
+                  case Status.approved:
+                    statusIcon = const Icon(Icons.check, color: Colors.green);
+                    break;
+                  case Status.rejected:
+                    statusIcon = const Icon(Icons.close, color: Colors.red);
+                    break;
+                  default:
+                    statusIcon = const Icon(Icons.pending);
+                    break;
                 }
+
+                return Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.menu_book_outlined),
+                        title: Text('$disciplineString - $placeString'),
+                        subtitle: Text(
+                            'Date: $dateString - ${lesson.duration} minutes'),
+                        trailing: statusIcon,
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ),
@@ -140,7 +159,6 @@ class LessonsPageState extends State<LessonsPage> {
                         : discipline == 'Show Jumping'
                             ? Discipline.showJumping
                             : Discipline.endurance,
-                    status: 'pending',
                     userId: widget.user.id,
                   );
 

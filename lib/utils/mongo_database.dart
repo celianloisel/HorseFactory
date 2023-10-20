@@ -185,13 +185,12 @@ class MongoDatabase {
     await _db.collection('lessons').insert(lesson.toMap());
   }
 
-  Future<List<Lesson>> getLessons() async {
+  Future<List<Lesson>> getLessons(SelectorBuilder query) async {
     final lessonsCollection = _db.collection('lessons');
 
-    final query = where.sortBy('date', descending: false);
     final lessonsMapList = await lessonsCollection.find(query).toList();
 
-    final lessonsList =
+    List<Lesson> lessonsList =
         lessonsMapList.map((lessonMap) => Lesson.fromMap(lessonMap)).toList();
 
     return lessonsList;
