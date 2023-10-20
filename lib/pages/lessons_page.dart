@@ -62,17 +62,22 @@ class LessonsPageState extends State<LessonsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Cours'), actions: [
-        TextButton(
-          child: Text(viewingPendingLessons
-              ? 'Revenir à mes cours'
-              : 'Cours en attente'),
-          onPressed: () {
-            setState(() {
-              viewingPendingLessons = !viewingPendingLessons;
-            });
-            loadLessons(); // Rechargez les cours
-          },
-        )
+        // if admin show button to view pending lessons
+        if (widget.user.roles.contains('ADMIN'))
+          TextButton(
+            child: Text(
+              viewingPendingLessons
+                  ? 'Voir mes cours'
+                  : 'Voir les cours en attente',
+              style: const TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              setState(() {
+                viewingPendingLessons = !viewingPendingLessons;
+              });
+              loadLessons(); // Rechargez les cours
+            },
+          )
       ]),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
