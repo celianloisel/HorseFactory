@@ -5,6 +5,7 @@ import 'package:horse_factory/models/horse.dart';
 import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/utils/enum_utils.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -222,16 +223,27 @@ class MongoDatabase {
     await _db.collection('lessons').insert(lesson.toMap());
   }
 
-  Future<List<Lesson>> getLessons() async {
+  Future<List<Lesson>> getLessons(SelectorBuilder query) async {
     final lessonsCollection = _db.collection('lessons');
 
-    final query = where.sortBy('date', descending: false);
     final lessonsMapList = await lessonsCollection.find(query).toList();
 
-    final lessonsList =
+    List<Lesson> lessonsList =
         lessonsMapList.map((lessonMap) => Lesson.fromMap(lessonMap)).toList();
 
     return lessonsList;
+  }
+
+  Future<void> updateLessonStatus(ObjectId lessonId, Status status) async {
+    final lessonsCollection = _db.collection('lessons');
+
+    final query = where.eq('_id', lessonId);
+    final updateBuilder = ModifierBuilder();
+
+    String statusString = getEnumValueString(status);
+    updateBuilder.set('status', statusString);
+
+    await lessonsCollection.update(query, updateBuilder);
   }
 
   Future<List<User>> getUsers() async {

@@ -1,82 +1,73 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
-enum Place {
-  indoorArena,
-  outdoorArena,
-}
-
 enum Discipline {
   dressage,
   showJumping,
   endurance,
 }
 
+enum Place {
+  indoorArena,
+  outdoorArena,
+}
+
 enum Status {
   pending,
   approved,
   rejected,
-  completed,
 }
 
 class Lesson {
   final ObjectId? id;
   final Place place;
+  final Discipline discipline;
   final DateTime date;
   final int duration;
-  final Discipline discipline;
   final Status status;
   final ObjectId userId;
 
   Lesson({
     ObjectId? id,
+    required Discipline discipline,
     required Place place,
     required DateTime date,
     required int duration,
-    required Discipline discipline,
-    required String status,
+    Status? status,
     required ObjectId userId,
   })  : id = id,
+        discipline = discipline,
         place = place,
         date = date,
         duration = duration,
-        discipline = discipline,
-        status = 'pending' == status
-            ? Status.pending
-            : 'approved' == status
-                ? Status.approved
-                : 'rejected' == status
-                    ? Status.rejected
-                    : Status.completed,
+        status = status ?? Status.pending,
         userId = userId;
 
   // Convertit une instance de la classe Lesson en un document MongoDB
   Map<String, dynamic> toMap() {
     return {
-      'place': place.toString().split('.').last,
+      'discipline': discipline.name,
+      'place': place.name,
       'date': date,
       'duration': duration,
-      'discipline': discipline.toString().split('.').last,
-      'status': status.toString().split('.').last,
+      'status': status.name,
       'userId': userId
     };
   }
 
   // Convertit un document MongoDB en une instance de la classe Lesson
-
   factory Lesson.fromMap(Map<String, dynamic> map) {
-    return Lesson(
-      place: map['place'] == 'indoorArena'
-          ? Place.indoorArena
-          : Place.outdoorArena,
-      date: map['date'],
-      duration: map['duration'] == 30 ? 30 : 60,
-      discipline: map['discipline'] == 'dressage'
-          ? Discipline.dressage
-          : map['discipline'] == 'showJumping'
-              ? Discipline.showJumping
-              : Discipline.endurance,
-      status: map['status'],
-      userId: map['userId'],
+    Lesson lesson = Lesson(
+      id: map['_id'] as ObjectId?,
+      discipline: Discipline.values
+          .firstWhere((e) => e.toString() == 'Discipline.${map['discipline']}'),
+      place: Place.values
+          .firstWhere((e) => e.toString() == 'Place.${map['place']}'),
+      date: map['date'] as DateTime,
+      duration: map['duration'] as int,
+      status: Status.values
+          .firstWhere((e) => e.toString() == 'Status.${map['status']}'),
+      userId: map['userId'] as ObjectId,
     );
+    return lesson;
   }
 }
