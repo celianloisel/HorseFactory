@@ -20,10 +20,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const EditProfilPage(
-                      title: 'Modification',
-                    ),
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => EditProfilPage(user: user!),
                   ),
                 );
               },
