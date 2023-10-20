@@ -25,20 +25,33 @@ class LessonsPageState extends State<LessonsPage> {
   TimeOfDay selectedTime = TimeOfDay.now();
   List<Lesson> lessons = [];
 
+  bool viewingPendingLessons = false;
+
   MongoDatabase mongoDatabase = MongoDatabase();
 
   @override
   void initState() {
     loadLessons();
+    print(widget.user.roles);
     super.initState();
   }
 
   Future<void> loadLessons() async {
-    // Récupère les cours de l'utilisateur, triés par date après maintenant
-    final query = where
-        .eq('userId', widget.user.id)
-        .sortBy('date', descending: false)
-        .gt('date', DateTime.now());
+    late SelectorBuilder query;
+    if (viewingPendingLessons) {
+      query = where
+          // Récupère les cours en attente, triés par date après maintenant
+          .ne('userId', widget.user.id) // tous les autres utilisateurs
+          .eq('status', Status.pending.name)
+          .sortBy('date', descending: false)
+          .gt('date', DateTime.now());
+    } else {
+      // Récupère les cours de l'utilisateur, triés par date après maintenant
+      query = where
+          .eq('userId', widget.user.id)
+          .sortBy('date', descending: false)
+          .gt('date', DateTime.now());
+    }
     final lessonsList = await mongoDatabase.getLessons(query);
     setState(() {
       lessons = lessonsList;
@@ -48,9 +61,19 @@ class LessonsPageState extends State<LessonsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cours'),
-      ),
+      appBar: AppBar(title: const Text('Cours'), actions: [
+        TextButton(
+          child: Text(viewingPendingLessons
+              ? 'Revenir à mes cours'
+              : 'Cours en attente'),
+          onPressed: () {
+            setState(() {
+              viewingPendingLessons = !viewingPendingLessons;
+            });
+            loadLessons(); // Rechargez les cours
+          },
+        )
+      ]),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -104,7 +127,31 @@ class LessonsPageState extends State<LessonsPage> {
                         title: Text('$disciplineString - $placeString'),
                         subtitle: Text(
                             'Date: $dateString - ${lesson.duration} minutes'),
-                        trailing: statusIcon,
+                        // Afficher l'icone de statut dans le trailing si viewingPendingLessons est faux
+                        trailing: !viewingPendingLessons
+                            ? statusIcon
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon:
+                                        Icon(Icons.check, color: Colors.green),
+                                    onPressed: () {
+                                      mongoDatabase.updateLessonStatus(
+                                          lesson.id!, Status.approved);
+                                      loadLessons();
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.close, color: Colors.red),
+                                    onPressed: () {
+                                      mongoDatabase.updateLessonStatus(
+                                          lesson.id!, Status.rejected);
+                                      loadLessons();
+                                    },
+                                  ),
+                                ],
+                              ),
                       ),
                     ],
                   ),

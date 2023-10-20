@@ -5,6 +5,7 @@ import 'package:horse_factory/models/horse.dart';
 import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/utils/enum_utils.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -194,6 +195,18 @@ class MongoDatabase {
         lessonsMapList.map((lessonMap) => Lesson.fromMap(lessonMap)).toList();
 
     return lessonsList;
+  }
+
+  Future<void> updateLessonStatus(ObjectId lessonId, Status status) async {
+    final lessonsCollection = _db.collection('lessons');
+
+    final query = where.eq('_id', lessonId);
+    final updateBuilder = ModifierBuilder();
+
+    String statusString = getEnumValueString(status);
+    updateBuilder.set('status', statusString);
+
+    await lessonsCollection.update(query, updateBuilder);
   }
 
   Future<List<User>> getUsers() async {
