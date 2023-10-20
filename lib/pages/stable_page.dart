@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:horse_factory/appBar/home_appBar.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/pages/comment_party_page.dart';
 import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/member_page.dart';
 import 'package:horse_factory/pages/party_participants_page.dart';
@@ -331,7 +332,18 @@ class StablePageState extends State<StablePage> {
                     title: const Text("Comments"),
                     trailing: IconButton(
                       icon: const Icon(Icons.arrow_forward),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CommentPartyPage(
+                              title: 'Comment',
+                              party: party,
+                              user: user,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

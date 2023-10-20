@@ -234,4 +234,28 @@ class MongoDatabase {
     final query = where.eq('_id', horseId);
     await horsesCollection.remove(query);
   }
+
+  Future<void> addComment(ObjectId partyId, String comment) async {
+    final partiesCol = _db.collection('parties');
+
+    final query = where.eq('_id', partyId);
+    final updateBuilder = ModifierBuilder();
+    updateBuilder.push('comments', comment);
+
+    await partiesCol.update(query, updateBuilder);
+  }
+
+  Future<List<String>?> getComments(ObjectId partyId) async {
+    final partiesCollection = _db.collection('parties');
+
+    final query = where.eq('_id', partyId);
+    final partyMap = await partiesCollection.findOne(query);
+
+    if (partyMap != null) {
+      final party = Party.fromJson(partyMap);
+      return party.comments;
+    } else {
+      return null;
+    }
+  }
 }
