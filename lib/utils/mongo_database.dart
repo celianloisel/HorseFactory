@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:horse_factory/constants/database.dart';
+import 'package:horse_factory/models/horse.dart';
 import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
@@ -213,5 +214,24 @@ class MongoDatabase {
 
     final query = where.eq('_id', userId);
     await usersCollection.remove(query);
+  }
+
+  Future<List<Horse>> getHorses() async {
+    final horsesCollection = _db.collection('horses');
+
+    final query = where.sortBy('name', descending: false);
+    final horsesMapList = await horsesCollection.find(query).toList();
+
+    final horsesList =
+        horsesMapList.map((horseMap) => Horse.fromJson(horseMap)).toList();
+
+    return horsesList;
+  }
+
+  Future<void> deleteHorse(ObjectId horseId) async {
+    final horsesCollection = _db.collection('horses');
+
+    final query = where.eq('_id', horseId);
+    await horsesCollection.remove(query);
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:horse_factory/pages/home_page.dart';
 import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/stable_page.dart';
-import 'package:horse_factory/pages/edit_profil_page.dart.dart';
+import 'package:horse_factory/pages/edit_profil_page.dart';
 import '../models/user.dart';
 
 class BottomNavigationBarWidget extends StatefulWidget {

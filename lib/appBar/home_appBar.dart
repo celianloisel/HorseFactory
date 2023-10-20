@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horse_factory/models/user.dart';
-import 'package:horse_factory/pages/edit_profil_page.dart.dart';
+import 'package:horse_factory/pages/edit_profil_page.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final User? user;
