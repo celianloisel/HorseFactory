@@ -6,6 +6,7 @@ import 'package:horse_factory/widgets/bottom_navigation_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'models/auth.dart';
+import 'models/calendar.dart';
 import 'models/user.dart';
 
 void main() async {
@@ -26,6 +27,7 @@ void main() async {
             initialData: null,
             create: (context) => MongoDatabase().user
           ),
+          ChangeNotifierProvider(create: (_) => CalendarState()),
         ],
         child: MyApp(),
       ),
