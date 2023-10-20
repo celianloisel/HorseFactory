@@ -12,19 +12,20 @@ class HomePage extends StatelessWidget {
     String welcomeMessage = 'Bienvenue, Utilisateur ${user?.email}';
 
     if (user?.userName != null && user!.userName.isNotEmpty) {
-      welcomeMessage = 'Bienvenue, ${user.userName} ${(user.id).$oid.toString()}';
+      welcomeMessage =
+          'Bienvenue, ${user.userName} ${(user.id).$oid.toString()}';
     }
 
     return Scaffold(
-      appBar: HomeAppBar(user: user),
+      appBar: HomeAppBar(title: 'Home Page', user: user),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverToBoxAdapter(
             child: Container(
               height: 300,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/box_chevaux.png'),
+                  image: AssetImage('assets/images/box_chevaux.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),

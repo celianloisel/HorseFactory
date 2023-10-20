@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:horse_factory/appBar/home_appBar.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/pages/lessons_page.dart';
+import 'package:horse_factory/pages/member_page.dart';
 import 'package:horse_factory/pages/party_participants_page.dart';
 import 'package:horse_factory/utils/mongo_database.dart';
 import 'package:horse_factory/widgets/create_party_pop_up.dart';
+import 'package:horse_factory/widgets/info_card.dart';
 import 'package:intl/intl.dart';
 
 class StablePage extends StatefulWidget {
@@ -14,12 +18,13 @@ class StablePage extends StatefulWidget {
   final User user;
 
   @override
-  _StablePageState createState() => _StablePageState();
+  StablePageState createState() => StablePageState();
 }
 
-class _StablePageState extends State<StablePage> {
+class StablePageState extends State<StablePage> {
+  final MongoDatabase mongoDatabase = MongoDatabase();
+
   List<Party> parties = [];
-  MongoDatabase mongoDatabase = MongoDatabase();
 
   @override
   void initState() {
@@ -48,36 +53,71 @@ class _StablePageState extends State<StablePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            children: [
-              const Text(
-                'Écurie',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
+        appBar: HomeAppBar(title: widget.title, user: widget.user),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Horse Factory',
+                    style: TextStyle(
+                      fontSize: 32, // Increase font size
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue, // Change text color
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Bienvenue dans l\'espace de l\'écurie',
+                    style: TextStyle(
+                      fontSize: 20, // Increase font size
+                      color: Colors.grey, // Change text color
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  InfoCard(
+                    title: 'Membres de l\'écurie',
+                    subtitle: 'Liste des membres de l\'écurie',
+                    buttonText: 'Voir',
+                    icon: Icons.people,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemberPage(user: widget.user),
+                        ),
+                      );
+                    },
+                  ),
+                  InfoCard(
+                    title: 'Cours',
+                    subtitle: 'Liste des cours',
+                    buttonText: 'Voir',
+                    icon: Icons.menu_book_outlined,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LessonsPage(user: widget.user),
+                        ),
+                      );
+                    },
+                  ),
+                  Card(
+                    elevation: 3,
+                    color: Colors.grey[200],
+                    child: parties.isEmpty
+                        ? _buildNoPartiesContent(context)
+                        : _buildPartiesList(context),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Card(
-                elevation: 3,
-                color: Colors.grey[200],
-                child: parties.isEmpty
-                    ? _buildNoPartiesContent(context)
-                    : _buildPartiesList(context),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildNoPartiesContent(BuildContext context) {
@@ -215,7 +255,6 @@ class _StablePageState extends State<StablePage> {
       imagePath = 'assets/images/resto.jpg';
     }
 
-    final commentController = TextEditingController();
     final user = widget.user;
 
     await showModalBottomSheet(
@@ -305,71 +344,3 @@ class _StablePageState extends State<StablePage> {
     );
   }
 }
-
-// const SizedBox(height: 24),
-// const Text(
-//   "Commentaires",
-//   style: TextStyle(
-//     fontSize: 18.0,
-//     fontWeight: FontWeight.bold,
-//   ),
-// ),
-// const SizedBox(height: 24),
-// SizedBox(
-//   height: 200.0,
-//   child:
-//       (party.comments != null && party.comments!.isNotEmpty)
-//           ? ListView.builder(
-//               shrinkWrap: true,
-//               itemCount: party.comments!.length,
-//               itemBuilder: (context, index) {
-//                 final comment = party.comments![index];
-//                 return Card(
-//                   child: ListTile(
-//                     style: ListTileStyle.list,
-//                     tileColor: Colors.white,
-//                     title: Text(comment),
-//                   ),
-//                 );
-//               },
-//             )
-//           : const Text("No comments available"),
-// ),
-// const SizedBox(height: 24),
-// const Text(
-//   "Ajouter un commentaire",
-//   style: TextStyle(
-//     fontSize: 18.0,
-//     fontWeight: FontWeight.bold,
-//   ),
-// ),
-// const SizedBox(height: 24),
-// TextField(
-//   controller: commentController,
-//   // Use the TextEditingController
-//   decoration: const InputDecoration(
-//     border: OutlineInputBorder(),
-//     labelText: 'Commentaire',
-//   ),
-// ),
-// const SizedBox(height: 24),
-// Center(
-//   child: ElevatedButton(
-//     style: ElevatedButton.styleFrom(
-//       backgroundColor: Colors.blue,
-//     ),
-//     onPressed: () {
-//       final comment = commentController.text;
-//       if (comment.isNotEmpty) {
-//         mongoDatabase.addComment(
-//             "653035905ccfede553f15b33", comment);
-//       }
-//     },
-//     child: const Text(
-//       "Ajouter",
-//       style: TextStyle(
-//         color: Colors.white,
-//       ),
-//     ),
-//   ),
-// ),

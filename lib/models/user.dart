@@ -51,23 +51,29 @@ class User with ChangeNotifier {
     Uint8List? profileImageBytes;
 
     if (profileImageBytesDynamic is List<dynamic>) {
-      profileImageBytes = Uint8List.fromList(profileImageBytesDynamic.cast<int>());
+      profileImageBytes =
+          Uint8List.fromList(profileImageBytesDynamic.cast<int>());
     } else if (profileImageBytesDynamic is Uint8List) {
       profileImageBytes = profileImageBytesDynamic;
     }
 
     return User(
       id: json['_id'] as ObjectId?,
-      userName: json['userName'] as String,
-      email: json['email'] as String,
-      password: json['password'] as String,
-      age: json['age'] as String,
-      phoneNumber: json['phoneNumber'] as String,
-      ffe: json['ffe'] as String,
+      userName: json['userName'] as String? ?? '',
+      // Handle null value with a default
+      email: json['email'] as String? ?? '',
+      // Handle null value with a default
+      password: json['password'] as String? ?? '',
+      // Handle null value with a default
+      age: json['age'] as String? ?? '',
+      // Handle null value with a default
+      phoneNumber: json['phoneNumber'] as String? ?? '',
+      // Handle null value with a default
+      ffe: json['ffe'] as String? ?? '',
+      // Handle null value with a default
       profileImageBytes: profileImageBytes,
-    )..roles = List<String>.from(json['roles']);
+    )..roles = List<String>.from(json['roles'] ?? []);
   }
-
 
   void updateUser({
     ObjectId? id,
@@ -84,10 +90,10 @@ class User with ChangeNotifier {
       throw Exception("Le nom d'utilisateur ne peut pas être vide.");
     }
     if (email.isEmpty || !email.contains('@')) {
-    throw Exception("Veuillez saisir une adresse e-mail valide.");
+      throw Exception("Veuillez saisir une adresse e-mail valide.");
     }
     if (password.isEmpty || password.length < 6) {
-    throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
+      throw Exception("Le mot de passe doit comporter au moins 6 caractères.");
     }
 
     this.id = id ?? ObjectId();

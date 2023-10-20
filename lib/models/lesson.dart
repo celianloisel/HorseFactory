@@ -1,13 +1,13 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 enum Place {
-  indoor_arena,
-  outdoor_arena,
+  indoorArena,
+  outdoorArena,
 }
 
 enum Discipline {
   dressage,
-  show_jumping,
+  showJumping,
   endurance,
 }
 
@@ -19,74 +19,64 @@ enum Status {
 }
 
 class Lesson {
-  final ObjectId _id;
-  final Place _place;
-  final DateTime _date;
-  final int _duration; // durée en minutes
-  final Discipline _discipline;
-  final Status _status;
-  final ObjectId _userId;
+  final ObjectId? id;
+  final Place place;
+  final DateTime date;
+  final int duration;
+  final Discipline discipline;
+  final Status status;
+  final ObjectId userId;
 
   Lesson({
-    required String id,
-    required String place,
+    ObjectId? id,
+    required Place place,
     required DateTime date,
     required int duration,
-    required String discipline,
+    required Discipline discipline,
     required String status,
-    required String userId,
-  })  :
-        // Convert ObjectId.$oid.toString() en ObjectId
-        _id = ObjectId.fromHexString(id),
-        // Convertit String en enum Place
-        _place = Place.values.firstWhere((e) => e.toString() == 'Place.$place'),
-        _date = date,
-        _duration = duration,
-        // Convertit String en enum Discipline
-        _discipline = Discipline.values
-            .firstWhere((e) => e.toString() == 'Discipline.$discipline'),
-        // Convertit String en enum Status
-        _status =
-            Status.values.firstWhere((e) => e.toString() == 'Status.$status'),
-        _userId = ObjectId.fromHexString(userId);
+    required ObjectId userId,
+  })  : id = id,
+        place = place,
+        date = date,
+        duration = duration,
+        discipline = discipline,
+        status = 'pending' == status
+            ? Status.pending
+            : 'approved' == status
+                ? Status.approved
+                : 'rejected' == status
+                    ? Status.rejected
+                    : Status.completed,
+        userId = userId;
 
   // Convertit une instance de la classe Lesson en un document MongoDB
   Map<String, dynamic> toMap() {
     return {
-      'place': _place.toString().split('.').last,
-      'date': _date,
-      'duration': _duration,
-      'discipline': _discipline.toString().split('.').last,
-      'status': _status.toString().split('.').last,
-      'userId': _userId
+      'place': place.toString().split('.').last,
+      'date': date,
+      'duration': duration,
+      'discipline': discipline.toString().split('.').last,
+      'status': status.toString().split('.').last,
+      'userId': userId
     };
   }
 
   // Convertit un document MongoDB en une instance de la classe Lesson
-  factory Lesson.fromMap(Map<String, dynamic> map, String id) {
+
+  factory Lesson.fromMap(Map<String, dynamic> map) {
     return Lesson(
-      id: id,
-      place: map['place'],
+      place: map['place'] == 'indoorArena'
+          ? Place.indoorArena
+          : Place.outdoorArena,
       date: map['date'],
-      duration: map['duration'],
-      discipline: map['discipline'],
+      duration: map['duration'] == 30 ? 30 : 60,
+      discipline: map['discipline'] == 'dressage'
+          ? Discipline.dressage
+          : map['discipline'] == 'showJumping'
+              ? Discipline.showJumping
+              : Discipline.endurance,
       status: map['status'],
-      // Convertit ObjectId en String
-      userId: map['userId'].$oid.toString(),
+      userId: map['userId'],
     );
   }
-
-  ObjectId get id => _id;
-
-  Place get place => _place;
-
-  DateTime get date => _date;
-
-  int get duration => _duration;
-
-  Discipline get discipline => _discipline;
-
-  Status get status => _status;
-
-  ObjectId get userId => _userId;
 }
