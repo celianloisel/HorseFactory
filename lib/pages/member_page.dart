@@ -119,8 +119,8 @@ class _MemberPageState extends State<MemberPage> {
                     for (int index = 0; index < horses.length; index++)
                       InfoCard(
                         title: horses[index].name,
-                        subtitle: horses[index].age,
-                        icon: Icons.supervised_user_circle,
+                        subtitle: 'Age: ${horses[index].age} ans\nRobe: ${horses[index].color}\nRace: ${horses[index].breed}\nSexe: ${horses[index].gender}\nSpécialité: ${horses[index].specialization}',
+                        imageUrl: horses[index].photo,
                         buttonText: (isUserAdmin) ? 'Supprimer' : null,
                         onPressed: (isUserAdmin)
                             ? () async {
