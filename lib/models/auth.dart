@@ -23,6 +23,11 @@ class AuthModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateUser(User updatedUser) {
+    _user = updatedUser;
+    notifyListeners();
+  }
+
   void logout() {
     print('Log out du auth');
     if (_user == null) {

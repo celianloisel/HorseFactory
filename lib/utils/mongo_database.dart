@@ -6,7 +6,10 @@ import 'package:horse_factory/models/lesson.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../models/auth.dart';
 
 class MongoDatabase {
   final BehaviorSubject<User?> _userSubject =
@@ -134,6 +137,40 @@ class MongoDatabase {
       await usersCollection.update(query, updateBuilder);
     } else {
       throw Exception('Aucun utilisateur trouvé avec cet username et email.');
+    }
+  }
+
+  // --------------------Profile---------------------
+
+  Future<void> updateUserInDatabase(User updatedUser, BuildContext context) async {
+    try {
+      final usersCollection = _db.collection('users');
+      final query = where.eq('_id', updatedUser.id);
+      final updateBuilder = ModifierBuilder();
+      updateBuilder.set('userName', updatedUser.userName);
+      updateBuilder.set('email', updatedUser.email);
+      updateBuilder.set('password', updatedUser.password);
+      updateBuilder.set('age', updatedUser.age);
+      updateBuilder.set('phoneNumber', updatedUser.phoneNumber);
+      updateBuilder.set('ffe', updatedUser.ffe);
+
+      await usersCollection.update(query, updateBuilder);
+
+      final authModel = Provider.of<AuthModel>(context, listen: false);
+      authModel.updateUser(updatedUser);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Profil mis à jour avec succès"),
+        ),
+      );
+    } catch (e) {
+      print("Erreur lors de la mise à jour de l'utilisateur : $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Une erreur s'est produite lors de la mise à jour du profil."),
+        ),
+      );
     }
   }
 
