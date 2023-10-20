@@ -4,13 +4,11 @@ import 'package:horse_factory/models/auth.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:horse_factory/pages/login_page.dart';
 
-class ProfileAppBar extends StatelessWidget {
+class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget{
   final User? user;
 
-  const ProfileAppBar({
-    this.user,
-    required List<OverlayEntry> overlayEntries,
-  });
+  ProfileAppBar({required this.user});
+
 
   @override
   Widget build(BuildContext context) {
