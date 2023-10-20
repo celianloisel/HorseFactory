@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:horse_factory/models/auth.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:horse_factory/pages/login_page.dart';
+import '../utils/mongo_database.dart';
 
 class EditProfilPage extends StatefulWidget {
   late User user;
@@ -14,7 +15,25 @@ class EditProfilPage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilPage> {
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController ffeController = TextEditingController();
   bool isObscurePassword = true;
+
+  final mongoDatabase = MongoDatabase();
+
+  @override
+  void initState() {
+    super.initState();
+    userNameController.text = widget.user.userName;
+    emailController.text = widget.user.email;
+    ageController.text = widget.user.age;
+    phoneNumberController.text = widget.user.phoneNumber;
+    ffeController.text = widget.user.ffe;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,18 +127,20 @@ class _EditProfilePageState extends State<EditProfilPage> {
             delegate: SliverChildListDelegate(
               [
                 SizedBox(height: 30),
-                buildTextField("name", "", false),
-                buildTextField("Email", "", false),
-                buildTextField("Age", "", false),
-                buildTextField("Password", "", true),
-                buildTextField("horse", "", false),
-                buildTextField("FFE link", "", false),
+                buildTextField("Pseudo", userNameController, false),
+                buildTextField("Email", emailController, false),
+                buildTextField("Mot de passe", passwordController, true),
+                buildTextField("Age", ageController, false),
+                buildTextField("Numéro de téléphone", phoneNumberController, false),
+                buildTextField("FFE link", ffeController, false),
                 SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // A faire
+                      },
                       child: Text(
                         "Cancel",
                         style: TextStyle(fontSize: 15, color: Colors.black),
@@ -132,7 +153,9 @@ class _EditProfilePageState extends State<EditProfilPage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        saveUserProfile();
+                      },
                       child: Text(
                         "Save",
                         style: TextStyle(fontSize: 15, color: Colors.white),
@@ -156,11 +179,12 @@ class _EditProfilePageState extends State<EditProfilPage> {
   }
 
   Widget buildTextField(
-      String labelText, String placeholder, bool isPasswordTextField) {
+      String labelText, TextEditingController controller, bool isPasswordTextField) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 30, left: 16, right: 16), // Ajoutez des marges gauche et droite
+      padding: EdgeInsets.only(bottom: 30, left: 16, right: 16),
       child: TextField(
-        obscureText: isObscurePassword ? isObscurePassword : false,
+        controller: controller,
+        obscureText: isPasswordTextField ? isObscurePassword : false,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(0),
           isDense: true,
@@ -176,7 +200,6 @@ class _EditProfilePageState extends State<EditProfilPage> {
               : null,
           labelText: labelText,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintText: placeholder,
           hintStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -187,7 +210,6 @@ class _EditProfilePageState extends State<EditProfilPage> {
     );
   }
 
-
   Future<void> signOut(BuildContext context) async {
     print('Log out');
     Provider.of<AuthModel>(context, listen: false).logout();
@@ -197,4 +219,41 @@ class _EditProfilePageState extends State<EditProfilPage> {
           (Route<dynamic> route) => false,
     );
   }
+
+  Future<void> saveUserProfile() async {
+    final updateduserName = userNameController.text;
+    final updatedEmail = emailController.text;
+    final updatedAge = ageController.text;
+    final updatedPassword = passwordController.text;
+    final updatePhoneNumer = phoneNumberController.text;
+    final updatedFfe = ffeController.text;
+
+    final updatedUser = User(
+      id: widget.user.id,
+      userName: updateduserName,
+      email: updatedEmail,
+      password: updatedPassword,
+      age: updatedAge,
+      phoneNumber: updatePhoneNumer,
+      ffe: updatedFfe,
+      profileImageBytes: widget.user.profileImageBytes,
+    );
+
+    Provider.of<AuthModel>(context, listen: false).updateUser(updatedUser);
+
+    await mongoDatabase.updateUserInDatabase(updatedUser, context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Profil mis à jour avec succès"),
+      ),
+    );
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => EditProfilPage(user: updatedUser),
+      ),
+    );
+  }
+
 }
