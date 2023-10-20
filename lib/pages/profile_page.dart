@@ -14,7 +14,7 @@ class Profile extends StatelessWidget {
     return CustomScrollView(
       slivers: <Widget>[
         ProfileAppBar(user: user, overlayEntries: overlayEntries),
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: SizedBox(height: 20),
         ),
       ],

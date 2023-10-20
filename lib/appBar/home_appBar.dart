@@ -1,17 +1,17 @@
-import 'package:horse_factory/models/user.dart';
 import 'package:flutter/material.dart';
-
-import '../pages/profile_page.dart';
+import 'package:horse_factory/models/user.dart';
+import 'package:horse_factory/pages/edit_profil_page.dart.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final User? user;
+  final String title;
 
-  HomeAppBar({required this.user});
+  HomeAppBar({required this.user, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text('Écuries'),
+      title: Text(title),
       actions: [
         if (user != null)
           Padding(
@@ -20,8 +20,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => Profile(user: user!),
+                  MaterialPageRoute(
+                    builder: (context) => const EditProfilPage(
+                      title: 'Modification',
+                    ),
                   ),
                 );
               },

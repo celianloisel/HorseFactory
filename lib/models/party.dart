@@ -23,7 +23,6 @@ class Party {
       name: map['name'],
       type: map['type'],
       dateTime: DateTime.parse(map['dateTime']),
-      // Parse the date string to DateTime
       participants: map['participants'] != null
           ? List<ObjectId>.from(map['participants'])
           : [],
