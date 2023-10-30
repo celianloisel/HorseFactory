@@ -3,6 +3,7 @@ import 'package:horse_factory/appBar/home_appBar.dart';
 import 'package:horse_factory/models/party.dart';
 import 'package:horse_factory/models/user.dart';
 import 'package:horse_factory/pages/comment_party_page.dart';
+import 'package:horse_factory/pages/concours_page.dart';
 import 'package:horse_factory/pages/lessons_page.dart';
 import 'package:horse_factory/pages/member_page.dart';
 import 'package:horse_factory/pages/party_participants_page.dart';
@@ -103,6 +104,20 @@ class StablePageState extends State<StablePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => LessonsPage(user: widget.user),
+                        ),
+                      );
+                    },
+                  ),
+                  InfoCard(
+                    title: 'Compétition',
+                    subtitle: 'Liste des compétitions',
+                    buttonText: 'Voir',
+                    
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TestPage(user: widget.user, title: 'Concours',),
                         ),
                       );
                     },
